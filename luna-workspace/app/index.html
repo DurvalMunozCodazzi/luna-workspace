@@ -539,7 +539,9 @@ html,body{height:100%;font-family:var(--f);background:var(--bg);color:var(--t1);
 
 /* ── CALENDAR ── */
 /* ── CALENDAR PANEL ── */
-#cal-panel{position:fixed;top:calc(var(--th) + var(--ads-h));left:0;right:0;bottom:0;background:var(--bg);z-index:200;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+/* A pantalla completa, igual que #metrics-panel — gana espacio y no queda
+   atado a la altura recortada por el header/banner de ads */
+#cal-panel{position:fixed;inset:0;background:var(--bg);z-index:300;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
 #cal-panel.on{transform:translateY(0)}
 
 
@@ -3230,6 +3232,10 @@ function toggleCalPanel(){
   closeAllPanels();
   if(!isOpen){ p.classList.add('on'); renderCalendar(); }
 }
+document.addEventListener('keydown', e=>{
+  if(e.key!=='Escape') return;
+  if(document.getElementById('cal-panel')?.classList.contains('on')) toggleCalPanel();
+});
 
 function calPrev(){ CAL.month--; if(CAL.month<0){CAL.month=11;CAL.year--;} renderCalendar(); }
 function calNext(){ CAL.month++; if(CAL.month>11){CAL.month=0;CAL.year++;} renderCalendar(); }

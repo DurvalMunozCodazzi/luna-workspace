@@ -4,6 +4,17 @@ Reconstruido el 2026-07-22 a partir de los .zip de cada versión (no había
 historial de git previo). Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 versionado [Semántico](https://semver.org/lang/es/).
 
+## luna-workspace [11.1.97] - 2026-07-22
+
+### Cambiado
+- **Calendario a pantalla completa**, igual que "Analítica" (`#metrics-panel`):
+  `#cal-panel` pasa de `top:calc(var(--th) + var(--ads-h))` a `position:fixed;inset:0`
+  con `z-index:300`, ganando todo el alto disponible en vez de quedar
+  recortado debajo del header/banner de ads. Se cierra con el botón X
+  existente o con **Esc** (nuevo). Complementa el fix de
+  `grid-auto-rows:1fr` de la versión anterior — juntos son más robustos
+  que cualquiera de los dos por separado.
+
 ## luna-workspace [11.1.96] - 2026-07-22
 
 ### Corregido
