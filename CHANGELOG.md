@@ -4,6 +4,27 @@ Reconstruido el 2026-07-22 a partir de los .zip de cada versión (no había
 historial de git previo). Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 versionado [Semántico](https://semver.org/lang/es/).
 
+## luna-workspace [11.1.96] - 2026-07-22
+
+### Corregido
+- **Calendario: la última fila de días aparecía "recortada"**. `.cal-grid`
+  usaba `grid-auto-rows` implícito (`auto`), así que cada fila de semanas
+  tomaba la altura que necesitaba según SU propio contenido — si la última
+  semana del mes tenía menos tareas cargadas ese día que las anteriores,
+  su fila se renderizaba visiblemente más chata que el resto (confirmado
+  con captura: 46px vs 80px de las filas de arriba). Se agregó
+  `grid-auto-rows:1fr` para que las filas siempre repartan el alto
+  disponible en partes iguales, sin importar cuánto contenido tenga cada
+  una.
+
+### Cambiado
+- **Orden de las tarjetas en el tablero Kanban**: ahora se ordenan por
+  fecha límite (la más cercana primero); las tarjetas sin fecha van al
+  final. Entre tarjetas con la misma fecha límite (o ambas sin fecha) se
+  sigue respetando el orden manual de arrastrar y soltar — no se perdió
+  esa función, solo pasó a ser el criterio de desempate en vez del
+  principal.
+
 ## luna-license-server [2.3.3] - 2026-07-22
 
 ### Corregido

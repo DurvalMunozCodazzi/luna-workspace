@@ -563,7 +563,7 @@ html,body{height:100%;font-family:var(--f);background:var(--bg);color:var(--t1);
 /* weekend day names in warm red */
 .cal-dow:first-child,.cal-dow:last-child{color:#ef4444}
 
-.cal-grid{flex:1;display:grid;grid-template-columns:repeat(7,1fr);gap:4px;overflow:hidden}
+.cal-grid{flex:1;display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:1fr;gap:4px;overflow:hidden}
 /* base day cell: slightly elevated surface, more prominent border */
 .cal-day{border:1px solid var(--bdr);border-radius:var(--rl);padding:7px 8px;cursor:pointer;transition:all .15s;overflow:hidden;display:flex;flex-direction:column;background:var(--surf);position:relative;box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .cal-day:hover{border-color:var(--acc);box-shadow:0 0 0 2px rgba(91,106,240,.15),0 3px 8px rgba(91,106,240,.1);transform:translateY(-1px)}
@@ -1966,6 +1966,18 @@ function sw(v){
 // ══════════════════════════════════════════════
 //  KANBAN RENDER
 // ══════════════════════════════════════════════
+// Orden de tarjetas dentro de una columna: por fecha límite (más cercana
+// primero), las sin fecha van al final. Entre tarjetas con la misma fecha
+// (o ambas sin fecha) se respeta el orden manual de arrastrar y soltar.
+function cardSortCmp(a,b){
+  if(a.due_date&&b.due_date){
+    if(a.due_date!==b.due_date) return a.due_date<b.due_date?-1:1;
+    return a.position-b.position;
+  }
+  if(a.due_date&&!b.due_date) return -1;
+  if(!a.due_date&&b.due_date) return 1;
+  return a.position-b.position;
+}
 function renderKanban(){
 
   const board=document.getElementById('kboard'),add=document.getElementById('acol');
@@ -1974,7 +1986,7 @@ function renderKanban(){
   const filteredCards = filterCards([...CARDS]);
   COLS.sort((a,b)=>a.position-b.position).forEach(col=>{
     const el=document.createElement('div');el.className='kcol';el.dataset.colId=col.id;
-    const colCards=filteredCards.filter(c=>c.column_id==col.id).sort((a,b)=>a.position-b.position);
+    const colCards=filteredCards.filter(c=>c.column_id==col.id).sort(cardSortCmp);
     el.innerHTML=`<div class="kch"><div class="cdot" style="background:${col.color}"></div><div class="ctit" onclick="${ro?'':`renCol(this,${col.id})`}">${esc(col.title)}</div><span class="cnt">${colCards.length}</span>${!ro?`<button class="cmb" onclick="showCM(event,${col.id})"><i class="fas fa-ellipsis-v"></i></button>`:''}</div><div class="kcards" id="kc-${col.id}" data-col-id="${col.id}"></div>${!ro?`<div class="qa-wrap"><button class="acb" id="qa-btn-${col.id}" onclick="showQA(${col.id},'qa')"><i class="fas fa-plus"></i> Agregar tarea</button><div class="qa-form" id="qa-form-${col.id}" style="display:none"><input class="qa-inp" id="qa-inp-${col.id}" placeholder="Título de la tarea..." autocomplete="off" onkeydown="qaKey(event,${col.id},'qa')"><div class="qa-btns"><button class="qa-ok" onclick="quickAddCard(${col.id},'qa')"><i class="fas fa-check"></i> Agregar</button><button class="qa-cancel" onclick="hideQA(${col.id},'qa')"><i class="fas fa-times"></i></button></div></div></div>`:''}`;
     board.insertBefore(el,add);
     const kce=document.getElementById('kc-'+col.id);
@@ -2074,7 +2086,7 @@ function renderFK(){
   const filteredCards = filterCards([...CARDS]);
   COLS.sort((a,b)=>a.position-b.position).forEach(col=>{
     const el=document.createElement('div');el.className='kcol';el.dataset.colId=col.id;
-    const colCards=filteredCards.filter(c=>c.column_id==col.id).sort((a,b)=>a.position-b.position);
+    const colCards=filteredCards.filter(c=>c.column_id==col.id).sort(cardSortCmp);
     el.innerHTML=`<div class="kch"><div class="cdot" style="background:${col.color}"></div><div class="ctit">${esc(col.title)}</div><span class="cnt">${colCards.length}</span>${!ro?`<button class="cmb" onclick="showCM(event,${col.id})"><i class="fas fa-ellipsis-v"></i></button>`:''}</div><div class="kcards" id="fkc-${col.id}" data-col-id="${col.id}"></div>${!ro?`<div class="qa-wrap"><button class="acb" id="fqa-btn-${col.id}" onclick="showQA(${col.id},'fqa')"><i class="fas fa-plus"></i> Agregar</button><div class="qa-form" id="fqa-form-${col.id}" style="display:none"><input class="qa-inp" id="fqa-inp-${col.id}" placeholder="Título..." autocomplete="off" onkeydown="qaKey(event,${col.id},'fqa')"><div class="qa-btns"><button class="qa-ok" onclick="quickAddCard(${col.id},'fqa')"><i class="fas fa-check"></i></button><button class="qa-cancel" onclick="hideQA(${col.id},'fqa')"><i class="fas fa-times"></i></button></div></div></div>`:''}`;
     fv.appendChild(el);
     const kce=document.getElementById('fkc-'+col.id);
