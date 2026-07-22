@@ -625,7 +625,13 @@ html,body{height:100%;font-family:var(--f);background:var(--bg);color:var(--t1);
 @media(max-width:768px){
   .cal-nav{padding:8px 14px;gap:6px}
   .cal-month-label{font-size:14px}
-  .cal-body{flex-direction:column}
+  /* En este ancho .cal-grid-wrap pasa a overflow:visible + flex:none (se
+     "estira" a su alto natural en vez de achicarse) para que las celdas no
+     queden ilegibles de chicas. Eso significa que la grilla completa puede
+     terminar siendo más alta que el espacio disponible — sin overflow-y:auto
+     acá, ese excedente (las últimas filas) quedaba directamente recortado
+     y sin forma de scrollear para verlo. */
+  .cal-body{flex-direction:column;overflow-y:auto}
   .cal-grid-wrap{padding:6px;overflow:visible;flex:none}
   .cal-grid{overflow:visible;gap:3px}
   .cal-day{min-height:54px;padding:4px 5px;border-radius:var(--r)}

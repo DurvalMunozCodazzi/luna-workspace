@@ -4,6 +4,22 @@ Reconstruido el 2026-07-22 a partir de los .zip de cada versión (no había
 historial de git previo). Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 versionado [Semántico](https://semver.org/lang/es/).
 
+## luna-workspace [11.1.100] - 2026-07-22
+
+### Corregido
+- **El calendario a pantalla completa (11.1.99) seguía cortando las
+  celdas del margen inferior** en ventanas angostas (ancho ≤768px — no
+  solo celulares: también un navegador de escritorio no maximizado o en
+  media pantalla). A ese ancho, `.cal-grid-wrap`/`.cal-grid` pasan a
+  `overflow:visible;flex:none` para que las celdas no se achiquen
+  demasiado, así que la grilla puede terminar siendo más alta que el
+  espacio disponible — pero `.cal-body` (el contenedor de la grilla +
+  la lista de tareas de abajo) se quedaba en `overflow:hidden`, sin
+  ninguna forma de hacer scroll para ver ese excedente. Confirmado con
+  Playwright: a 667×375, el contenido medía 499px contra 323px
+  disponibles, y esa diferencia se recortaba directamente. Se agregó
+  `overflow-y:auto` a `.cal-body` en ese breakpoint.
+
 ## luna-workspace [11.1.99] - 2026-07-22
 
 ### Corregido
