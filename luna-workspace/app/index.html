@@ -3276,7 +3276,15 @@ function toggleCalPanel(){
   if(!p) return;
   const isOpen = p.classList.contains('on');
   closeAllPanels();
-  if(!isOpen){ p.classList.add('on'); renderCalendar(); }
+  if(!isOpen){
+    // Igual que openMetrics(): sacarlo a hijo directo de <body>. #garea tiene
+    // isolation:isolate, así que cualquier z-index adentro (incluido el 300
+    // de este panel) queda atrapado en ESE contexto de apilamiento local y
+    // nunca puede superar a #topbar (z-index:100, pero fuera de #garea) —
+    // por eso se veía "cortado" justo a la altura de la barra superior.
+    if(p.parentNode !== document.body) document.body.appendChild(p);
+    p.classList.add('on'); renderCalendar();
+  }
 }
 document.addEventListener('keydown', e=>{
   if(e.key!=='Escape') return;

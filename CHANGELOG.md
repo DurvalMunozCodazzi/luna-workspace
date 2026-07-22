@@ -4,6 +4,28 @@ Reconstruido el 2026-07-22 a partir de los .zip de cada versión (no había
 historial de git previo). Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 versionado [Semántico](https://semver.org/lang/es/).
 
+## luna-workspace [11.1.99] - 2026-07-22
+
+### Corregido
+- **El calendario seguía sin verse a pantalla completa** después del fix de
+  la 11.1.97 (`position:fixed;inset:0;z-index:300`), a pesar de que la
+  geometría del panel era correcta: aparecía "cortado" justo a la altura de
+  la barra superior (`#topbar`). Causa real: `#garea` (el contenedor
+  padre del calendario) tiene `isolation:isolate`, lo que crea un nuevo
+  contexto de apilamiento — cualquier `z-index` adentro, incluido el 300
+  de `#cal-panel`, queda atrapado ahí y nunca puede competir contra
+  `#topbar` (`z-index:100`, pero fuera de `#garea`). Por eso el panel
+  siempre pintaba por debajo de la barra superior sin importar qué tan
+  alto fuera su propio z-index.
+  - `toggleCalPanel()` ahora reparenta `#cal-panel` como hijo directo de
+    `<body>` antes de mostrarlo, sacándolo del contexto de apilamiento de
+    `#garea` — el mismo patrón que ya usaba `openMetrics()` ("Analítica"),
+    que por eso nunca tuvo este problema.
+  - El fix de la 11.1.97 (posición/tamaño) y el de la 11.1.96
+    (`grid-auto-rows`) seguían siendo necesarios, pero no alcanzaban solos:
+    sin el reparenting el panel podía tener el tamaño y la posición
+    correctos y aun así pintarse tapado por la barra superior.
+
 ## luna-workspace [11.1.98] - 2026-07-22
 
 ### Agregado
