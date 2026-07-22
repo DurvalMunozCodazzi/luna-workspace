@@ -153,7 +153,6 @@ class LLS_Admin {
             }
             echo '<div class="notice notice-success"><p>Configuración guardada.</p></div>';
         }
-        $hmac = get_option('lls_hmac_secret', LLS_HMAC_SECRET);
         $private_key_set = !empty(get_option('lls_private_key', ''));
         require LLS_PLUGIN_DIR . 'admin/views/settings.php';
     }
