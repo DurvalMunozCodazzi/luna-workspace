@@ -147,7 +147,6 @@ class LLS_Admin {
     // ── SETTINGS ─────────────────────────────────────────────────────────────
     public function page_settings(): void {
         if (isset($_POST['lls_settings_nonce']) && wp_verify_nonce($_POST['lls_settings_nonce'], 'lls_settings')) {
-            update_option('lls_hmac_secret', sanitize_text_field($_POST['hmac_secret'] ?? ''));
             if (!empty($_POST['lls_private_key'])) {
                 update_option('lls_private_key', trim($_POST['lls_private_key']));
             }

@@ -4,6 +4,20 @@ Reconstruido el 2026-07-22 a partir de los .zip de cada versión (no había
 historial de git previo). Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 versionado [Semántico](https://semver.org/lang/es/).
 
+## luna-workspace [11.1.95] / luna-license-server [2.3.2] - 2026-07-22
+
+### Quitado
+- Se eliminó el esquema de firma HMAC que había quedado a medio hacer y
+  nunca se activaba (`luna-workspace/app/config.php` esperaba un campo
+  `hmac` que el servidor nunca mandó, y el formulario de Configuración
+  del license server guardaba un `hmac_secret` que ni siquiera tenía un
+  campo en la pantalla). La firma RSA (`sig`) sigue intacta y es la única
+  que se usa — ver `CLAUDE.md` si en algún momento hace falta verificarla
+  también en `config.php`.
+- De paso se sincronizó el número de versión hardcodeado en el
+  `Description:` de `luna-workspace.php` (decía "11.1.53" desde hacía
+  varias versiones).
+
 ## luna-license-server [2.3.1] - 2026-07-22
 
 ### Corregido
@@ -11,16 +25,6 @@ versionado [Semántico](https://semver.org/lang/es/).
   (`Undefined constant "LLS_HMAC_SECRET"`) en cualquier instalación con
   PHP 8+, siempre — la constante no se define en ningún lado del plugin.
   La variable resultante tampoco se usaba en la vista; se eliminó.
-
-### Nota (sin corregir, requiere decisión de diseño)
-- Hay dos esquemas de firma de licencia sin conciliar: el servidor firma
-  con RSA (`sig`, correctamente verificado por
-  `luna-workspace/includes/class-luna-license.php`), pero
-  `luna-workspace/app/config.php` tiene un chequeo HMAC separado que
-  espera un campo `hmac` que el servidor nunca envía. Hoy es inofensivo
-  porque está inactivo por defecto (`LUNA_HMAC_SECRET` nunca definida),
-  pero si se activa rompería la verificación de licencia del lado de la
-  app. Ver `CLAUDE.md`.
 
 ## [11.1.94] - actual
 

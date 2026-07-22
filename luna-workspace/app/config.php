@@ -207,31 +207,10 @@ function getLicenseInfo() {
         $data = $r ? json_decode($r, true) : null;
 
         if ($data && isset($data['valid'])) {
-            // Verificar firma HMAC — obligatoria si HMAC_SECRET está configurado
-            if (defined('LUNA_HMAC_SECRET') && LUNA_HMAC_SECRET) {
-                if (empty($data['hmac']) || empty($data['issued_at'])) {
-                    // Respuesta sin firma cuando el servidor requiere firma — rechazar
-                    $info = ['valid' => false, 'plan' => 'none', 'max_workspaces' => 0, 'max_users' => 0, 'reason' => 'missing_signature'];
-                    return $info;
-                }
-            }
-            if (!empty($data['hmac']) && !empty($data['issued_at']) && defined('LUNA_HMAC_SECRET') && LUNA_HMAC_SECRET) {
-                $sign_payload = implode('|', [
-                    $key,
-                    $data['domain']     ?? $domain,
-                    !empty($data['valid']) ? 'true' : 'false',
-                    $data['plan']       ?? '',
-                    $data['expires_at'] ?? '',
-                    $data['issued_at'],
-                ]);
-                $expected = hash_hmac('sha256', $sign_payload, LUNA_HMAC_SECRET);
-                if (!hash_equals($expected, $data['hmac'])) {
-                    // Firma inválida — tratar como offline restrictivo
-                    $info = ['valid' => false, 'plan' => 'none', 'max_workspaces' => 0, 'max_users' => 0,
-                             'reason' => 'invalid_signature'];
-                    return $info;
-                }
-            }
+            // No se verifica la firma RSA ('sig') de la respuesta acá — este
+            // request va directo por HTTPS al servidor de licencias, sin pasar
+            // por un cliente no confiable en el medio. (includes/class-luna-license.php
+            // sí la verifica, para su propio request independiente por REST.)
             $data['expires'] = time() + 86400 * (($data['grace'] ?? false) ? 1 : 30);
             @file_put_contents($cache_file, json_encode($data));
             $info = $data;
