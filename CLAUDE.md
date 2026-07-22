@@ -39,3 +39,14 @@ Web Sobre Ruedas (websobreruedas.com / .ar).
   `requireAdmin()` ni de forma permanente en el código — si hace falta uno
   para investigar un bug puntual, sacarlo (o protegerlo) antes de cerrar
   esa tarea.
+- Hay dos esquemas de firma de licencia sin conciliar entre servidor y
+  cliente: `luna-license-server` firma con RSA (campo `sig`), y eso es lo
+  que `luna-workspace/includes/class-luna-license.php` verifica
+  correctamente. Pero `luna-workspace/app/config.php::getLicenseInfo()`
+  tiene un chequeo HMAC separado y más viejo que espera un campo `hmac`
+  que el servidor nunca envía — está inactivo (requiere
+  `LUNA_HMAC_SECRET`, nunca definida), pero si alguien la define pensando
+  que suma seguridad, rompe la verificación de licencia del lado de la
+  app. Antes de tocar cualquiera de los dos, decidir si el HMAC se
+  termina de implementar en el servidor o se borra del cliente — no dejar
+  que seguir divergiendo.

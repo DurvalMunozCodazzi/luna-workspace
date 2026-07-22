@@ -4,6 +4,24 @@ Reconstruido el 2026-07-22 a partir de los .zip de cada versión (no había
 historial de git previo). Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 versionado [Semántico](https://semver.org/lang/es/).
 
+## luna-license-server [2.3.1] - 2026-07-22
+
+### Corregido
+- La página **Luna Licenses → Configuración** rompía con error fatal
+  (`Undefined constant "LLS_HMAC_SECRET"`) en cualquier instalación con
+  PHP 8+, siempre — la constante no se define en ningún lado del plugin.
+  La variable resultante tampoco se usaba en la vista; se eliminó.
+
+### Nota (sin corregir, requiere decisión de diseño)
+- Hay dos esquemas de firma de licencia sin conciliar: el servidor firma
+  con RSA (`sig`, correctamente verificado por
+  `luna-workspace/includes/class-luna-license.php`), pero
+  `luna-workspace/app/config.php` tiene un chequeo HMAC separado que
+  espera un campo `hmac` que el servidor nunca envía. Hoy es inofensivo
+  porque está inactivo por defecto (`LUNA_HMAC_SECRET` nunca definida),
+  pero si se activa rompería la verificación de licencia del lado de la
+  app. Ver `CLAUDE.md`.
+
 ## [11.1.94] - actual
 
 Versión con la que se inicializó este repo. Acumula todo lo de abajo.
