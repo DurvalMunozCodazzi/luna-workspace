@@ -572,18 +572,18 @@ html,body{height:100%;font-family:var(--f);background:var(--bg);color:var(--t1);
 
 /* day-name header: colored pill background */
 .cal-dow-row{display:grid;grid-template-columns:repeat(7,1fr);flex-shrink:0;margin-bottom:8px;gap:3px;background:linear-gradient(135deg,rgba(91,106,240,.09),rgba(139,92,246,.06));border-radius:var(--r);padding:2px 3px}
-.cal-dow{font-size:10px;font-weight:800;color:var(--acc);text-align:center;padding:7px 0;text-transform:uppercase;letter-spacing:.6px}
-/* weekend day names in warm red */
-.cal-dow:first-child,.cal-dow:last-child{color:#ef4444}
+.cal-dow{font-size:13px;font-weight:800;color:var(--acc);text-align:center;padding:9px 0;text-transform:uppercase;letter-spacing:.6px}
+/* weekend day names in warm red — semana arranca lunes, asi que sabado/domingo son las columnas 6 y 7 */
+.cal-dow:nth-child(6),.cal-dow:nth-child(7){color:#ef4444}
 
 .cal-grid{flex:1;display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:1fr;gap:4px;overflow:hidden}
 /* base day cell: slightly elevated surface, more prominent border */
 .cal-day{border:1px solid var(--bdr);border-radius:var(--rl);padding:7px 8px;cursor:pointer;transition:all .15s;overflow:hidden;display:flex;flex-direction:column;background:var(--surf);position:relative;box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .cal-day:hover{border-color:var(--acc);box-shadow:0 0 0 2px rgba(91,106,240,.15),0 3px 8px rgba(91,106,240,.1);transform:translateY(-1px)}
 /* weekend cells: warm purple tint to distinguish from weekdays */
-.cal-day.weekend{background:linear-gradient(160deg,rgba(139,92,246,.05),rgba(91,106,240,.04))}
+.cal-day.weekend{background:linear-gradient(160deg,rgba(139,92,246,.12),rgba(91,106,240,.09))}
 /* today: stronger accent border + glow */
-.cal-day.today{border-color:var(--acc);border-width:2px;background:linear-gradient(145deg,rgba(91,106,240,.09),rgba(139,92,246,.07));box-shadow:0 0 0 3px rgba(91,106,240,.18),0 4px 12px rgba(91,106,240,.12)}
+.cal-day.today{border-color:var(--acc);border-width:2px;background:linear-gradient(145deg,rgba(91,106,240,.14),rgba(139,92,246,.11));box-shadow:0 0 0 3px rgba(91,106,240,.25),0 4px 14px rgba(91,106,240,.16)}
 /* today day number: proper sized circle */
 .cal-day.today .cal-day-num{background:linear-gradient(135deg,var(--acc),#8b5cf6);color:#fff;width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;padding:0;box-shadow:0 2px 8px rgba(91,106,240,.45);font-size:12px}
 .cal-day.on{background:linear-gradient(145deg,rgba(91,106,240,.12),rgba(139,92,246,.08));border-color:var(--acc);border-width:2px}
@@ -3265,7 +3265,7 @@ function timeAgo(dateStr){
 // ══════════════════════════════════════════════
 let CAL = { year: new Date().getFullYear(), month: new Date().getMonth(), selectedDate: null };
 const CAL_MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-const CAL_DAYS   = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const CAL_DAYS   = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
 // Distinct color per month — header + nav tint changes as you navigate
 const CAL_MONTH_COLORS = [
   '#3b82f6', // Enero   — azul frío (año nuevo)
@@ -3343,7 +3343,7 @@ function renderCalendar(){
 
   const grid = document.getElementById('cal-grid'); if(!grid) return;
   const today = new Date(); today.setHours(0,0,0,0);
-  const firstDay = new Date(CAL.year, CAL.month, 1).getDay();
+  const firstDay = (new Date(CAL.year, CAL.month, 1).getDay() + 6) % 7; // semana arranca lunes (0=Lun..6=Dom)
   const daysInMonth = new Date(CAL.year, CAL.month+1, 0).getDate();
   const totalCells = firstDay + daysInMonth;
   const weeks = Math.ceil(totalCells / 7);

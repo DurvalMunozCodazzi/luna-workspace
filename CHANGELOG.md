@@ -4,6 +4,21 @@ Reconstruido el 2026-07-22 a partir de los .zip de cada versión (no había
 historial de git previo). Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 versionado [Semántico](https://semver.org/lang/es/).
 
+## luna-workspace [11.1.102] - 2026-07-22
+
+### Cambiado
+- **Mejoras estéticas en el calendario**, a pedido:
+  - La semana ahora arranca en **lunes** en vez de domingo (`CAL_DAYS` y el
+    cálculo de `firstDay` en `renderCalendar()` se ajustaron; antes usaban
+    `Date.getDay()` de JS tal cual, que arranca en domingo por default del
+    lenguaje — no era una norma ni una decisión de diseño).
+  - Nombres de los días de la semana (LUN, MAR...) de `10px` a `13px`, con
+    más padding — en pantallas grandes quedaban desproporcionadamente
+    chicos contra las celdas.
+  - Más contraste en las celdas de fin de semana (sábado/domingo) y en el
+    resaltado del día de hoy (antes casi imperceptibles, con opacidades
+    muy bajas).
+
 ## luna-workspace [11.1.101] - 2026-07-22
 
 ### Corregido
