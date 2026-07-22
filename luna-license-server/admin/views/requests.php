@@ -41,6 +41,9 @@
         <?php else: foreach ($rows as $req):
           $status_label = ['pending' => 'Pendiente', 'sent' => 'Atendida', 'rejected' => 'Rechazada'][$req['status']] ?? $req['status'];
           $status_cls   = ['pending' => 'wa', 'sent' => 'ok', 'rejected' => 'er'][$req['status']] ?? '';
+          // Solicitudes viejas (de antes de que el formulario tuviera plan) pueden
+          // no tener esta columna cargada — no asumir que siempre está.
+          $req_plan     = $req['plan'] ?? 'free';
         ?>
           <tr>
             <td><strong><?= esc_html($req['nombre']) ?></strong></td>
@@ -48,8 +51,8 @@
             <td><?= esc_html($req['telefono']) ?></td>
             <td><span class="lls-domain"><?= esc_html($req['dominio']) ?></span></td>
             <td>
-              <span class="lls-plan lls-plan-<?= esc_attr($req['plan']) ?>"><?= esc_html(LLS_License::plan_label($req['plan'])) ?></span>
-              <?php if ($req['plan'] !== 'free' && $req['status'] === 'pending'): ?>
+              <span class="lls-plan lls-plan-<?= esc_attr($req_plan) ?>"><?= esc_html(LLS_License::plan_label($req_plan)) ?></span>
+              <?php if ($req_plan !== 'free' && $req['status'] === 'pending'): ?>
                 <br><small style="color:#c62828">⏳ Verificar comprobante antes de aprobar</small>
               <?php endif; ?>
             </td>

@@ -20,6 +20,15 @@ class LLS_Admin {
         global $wpdb;
         $t_lic = $wpdb->prefix . 'lls_licenses';
         $t_log = $wpdb->prefix . 'lls_verify_log';
+        $t_req = $wpdb->prefix . 'lls_requests';
+
+        // Requests table: add plan if missing (instalaciones viejas, de antes
+        // de que el formulario de solicitud tuviera selector de plan, quedaron
+        // con filas sin esta columna — rompía la página de Solicitudes)
+        $req_cols = array_column($wpdb->get_results("SHOW COLUMNS FROM `{$t_req}`", ARRAY_A), 'Field');
+        if (!in_array('plan', $req_cols)) {
+            $wpdb->query("ALTER TABLE `{$t_req}` ADD COLUMN `plan` VARCHAR(32) NOT NULL DEFAULT 'free'");
+        }
 
         // Licenses table: add missing columns
         $lic_cols = array_column($wpdb->get_results("SHOW COLUMNS FROM `{$t_lic}`", ARRAY_A), 'Field');
@@ -93,13 +102,14 @@ class LLS_Admin {
                 (int) $_GET['from_request']
             ), ARRAY_A);
             if ($req) {
+                $req_plan = $req['plan'] ?? 'free';
                 $prefill = [
                     'request_id'     => (int) $req['id'],
                     'customer_name'  => $req['nombre'],
                     'customer_email' => $req['email'],
                     'domain'         => LLS_License::normalize_domain($req['dominio']),
-                    'plan'           => $req['plan'],
-                    'expires_at'     => $req['plan'] === 'free' ? date('Y-m-d', strtotime('+30 days')) : '',
+                    'plan'           => $req_plan,
+                    'expires_at'     => $req_plan === 'free' ? date('Y-m-d', strtotime('+30 days')) : '',
                     'notes'          => 'Tel: ' . $req['telefono'],
                 ];
             }

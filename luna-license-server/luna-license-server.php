@@ -3,7 +3,7 @@
  * Plugin Name: Luna License Server
  * Plugin URI:  https://websobreruedas.com
  * Description: Servidor de licencias para Luna Workspace. Gestiona claves, dominios y planes.
- * Version:     2.3.2
+ * Version:     2.3.3
  * Author:      Luna Team
  * License:     Proprietary
  * Text Domain: luna-license-server
@@ -11,7 +11,7 @@
 
 defined('ABSPATH') || exit;
 
-define('LLS_VERSION',    '2.3.2');
+define('LLS_VERSION',    '2.3.3');
 define('LLS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('LLS_PLUGIN_URL', plugin_dir_url(__FILE__));
 

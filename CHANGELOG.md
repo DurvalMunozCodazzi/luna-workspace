@@ -4,6 +4,26 @@ Reconstruido el 2026-07-22 a partir de los .zip de cada versión (no había
 historial de git previo). Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 versionado [Semántico](https://semver.org/lang/es/).
 
+## luna-license-server [2.3.3] - 2026-07-22
+
+### Corregido
+- **Error fatal en Luna Licenses → Solicitudes** en instalaciones donde la
+  tabla `lls_requests` quedó con un esquema viejo, de antes de que el
+  formulario de solicitud tuviera selector de plan: a esas filas les falta
+  la columna `plan`, y `LLS_License::plan_label(string $plan)` no acepta
+  `null` — tira `TypeError` y tumba toda la página (reportado en
+  websobreruedas.com con una solicitud vieja de prueba).
+  - `plan_label()` ahora acepta `?string` y muestra "Sin plan" si no hay
+    dato.
+  - `maybe_migrate()` agrega la columna `plan` (`DEFAULT 'free'`) a
+    `lls_requests` si falta — se corre en cada carga del admin, así que
+    se autoaplica solo con actualizar el plugin en websobreruedas.com, sin
+    tocar nada en los sitios de los abonados (`luna-license-server` corre
+    solo en el servidor central, no en cada dominio con `luna-workspace`).
+  - `admin/views/requests.php` y el prefill de "Nueva Licencia desde
+    solicitud" ya no acceden a `$req['plan']` directo sin verificar que
+    exista.
+
 ## luna-workspace [11.1.95] / luna-license-server [2.3.2] - 2026-07-22
 
 ### Quitado

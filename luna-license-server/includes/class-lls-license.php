@@ -247,7 +247,8 @@ class LLS_License {
         return strtolower(trim($d, '/'));
     }
 
-    public static function plan_label(string $plan): string {
+    public static function plan_label(?string $plan): string {
+        if (!$plan) return 'Sin plan';
         return self::PLANS[$plan]['label'] ?? ucfirst($plan);
     }
 }
