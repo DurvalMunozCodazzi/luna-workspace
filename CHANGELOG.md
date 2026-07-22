@@ -4,6 +4,18 @@ Reconstruido el 2026-07-22 a partir de los .zip de cada versión (no había
 historial de git previo). Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 versionado [Semántico](https://semver.org/lang/es/).
 
+## luna-workspace [11.1.98] - 2026-07-22
+
+### Agregado
+- **Selector de mes en columnas "completadas"** (cualquier columna cuyo
+  título contenga "complet", o la última por posición): en vez de scroll
+  infinito con todas las tareas completadas de siempre, la columna
+  muestra por defecto solo las del mes en curso, con flechas ‹ › para
+  navegar a meses anteriores (un punto junto al mes indica que no estás
+  viendo el mes actual). El resto de las columnas no se ve afectado.
+  Filtra por `updated_at` de la tarjeta (no hay un campo dedicado de
+  "fecha de completado" en el esquema actual).
+
 ## luna-workspace [11.1.97] - 2026-07-22
 
 ### Cambiado

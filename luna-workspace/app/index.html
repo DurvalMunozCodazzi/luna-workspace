@@ -220,6 +220,12 @@ html,body{height:100%;font-family:var(--f);background:var(--bg);color:var(--t1);
 .cnt{font-size:11px;font-weight:700;font-family:var(--fm);color:var(--t3);background:var(--act);padding:1px 5px;border-radius:99px}
 .cmb{width:18px;height:18px;border-radius:4px;border:none;background:transparent;color:var(--t3);font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
 .cmb:hover{background:var(--hov);color:var(--t1)}
+/* Selector de mes en columnas "completadas" (ej: Completados) */
+.kcol-msel{display:flex;align-items:center;gap:3px;padding:5px 9px;border-bottom:1px solid var(--bdr);background:var(--hov)}
+.kcol-msel-lbl{flex:1;text-align:center;font-size:10px;font-weight:700;color:var(--t2);text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kcol-msel-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--acc);margin-left:4px;vertical-align:middle}
+.kcol-msel-nb{width:16px;height:16px;flex-shrink:0;border:none;background:transparent;color:var(--t3);font-size:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:.15s}
+.kcol-msel-nb:hover{background:var(--act);color:var(--acc)}
 .kcards{flex:1;overflow-y:auto;padding:7px;display:flex;flex-direction:column;gap:5px;min-height:36px}
 .kcards.dov{background:var(--accg);border-radius:var(--r)}
 .kcard{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:8px 9px;cursor:pointer;transition:.15s;border-left:3px solid transparent}
@@ -1980,6 +1986,46 @@ function cardSortCmp(a,b){
   if(!a.due_date&&b.due_date) return 1;
   return a.position-b.position;
 }
+
+// ── Selector de mes para columnas "completadas" (evita scroll infinito) ──
+// Por columna, qué mes se está viendo (por defecto el actual). Se filtra
+// por updated_at (no hay un campo dedicado de "fecha de completado"), que
+// se actualiza solo cuando la tarjeta se mueve/edita.
+let COL_MONTH = {};
+function getColMonth(colId){
+  if(!COL_MONTH[colId]){
+    const now=new Date();
+    COL_MONTH[colId]={year:now.getFullYear(),month:now.getMonth()};
+  }
+  return COL_MONTH[colId];
+}
+function colMonthNav(colId,delta){
+  const m=getColMonth(colId);
+  m.month+=delta;
+  if(m.month<0){m.month=11;m.year--;}
+  else if(m.month>11){m.month=0;m.year++;}
+  renderKanban();
+  if(S.view==='kn')renderFK();
+}
+function colMonthFilter(col,cards){
+  if(!isCompletedCol(col)) return cards;
+  const m=getColMonth(col.id);
+  return cards.filter(c=>{
+    if(!c.updated_at) return true; // sin dato: no ocultar
+    const d=new Date(c.updated_at.replace(' ','T'));
+    return d.getFullYear()===m.year && d.getMonth()===m.month;
+  });
+}
+function colMonthSelHtml(col){
+  if(!isCompletedCol(col)) return '';
+  const m=getColMonth(col.id);
+  const isCurrent = (()=>{const now=new Date();return m.year===now.getFullYear()&&m.month===now.getMonth();})();
+  return `<div class="kcol-msel">
+    <button class="kcol-msel-nb" onclick="colMonthNav(${col.id},-1)" title="Mes anterior"><i class="fas fa-chevron-left"></i></button>
+    <span class="kcol-msel-lbl">${CAL_MONTHS[m.month]} ${m.year}${isCurrent?'':' <span class=\"kcol-msel-dot\"></span>'}</span>
+    <button class="kcol-msel-nb" onclick="colMonthNav(${col.id},1)" title="Mes siguiente"><i class="fas fa-chevron-right"></i></button>
+  </div>`;
+}
 function renderKanban(){
 
   const board=document.getElementById('kboard'),add=document.getElementById('acol');
@@ -1988,8 +2034,8 @@ function renderKanban(){
   const filteredCards = filterCards([...CARDS]);
   COLS.sort((a,b)=>a.position-b.position).forEach(col=>{
     const el=document.createElement('div');el.className='kcol';el.dataset.colId=col.id;
-    const colCards=filteredCards.filter(c=>c.column_id==col.id).sort(cardSortCmp);
-    el.innerHTML=`<div class="kch"><div class="cdot" style="background:${col.color}"></div><div class="ctit" onclick="${ro?'':`renCol(this,${col.id})`}">${esc(col.title)}</div><span class="cnt">${colCards.length}</span>${!ro?`<button class="cmb" onclick="showCM(event,${col.id})"><i class="fas fa-ellipsis-v"></i></button>`:''}</div><div class="kcards" id="kc-${col.id}" data-col-id="${col.id}"></div>${!ro?`<div class="qa-wrap"><button class="acb" id="qa-btn-${col.id}" onclick="showQA(${col.id},'qa')"><i class="fas fa-plus"></i> Agregar tarea</button><div class="qa-form" id="qa-form-${col.id}" style="display:none"><input class="qa-inp" id="qa-inp-${col.id}" placeholder="Título de la tarea..." autocomplete="off" onkeydown="qaKey(event,${col.id},'qa')"><div class="qa-btns"><button class="qa-ok" onclick="quickAddCard(${col.id},'qa')"><i class="fas fa-check"></i> Agregar</button><button class="qa-cancel" onclick="hideQA(${col.id},'qa')"><i class="fas fa-times"></i></button></div></div></div>`:''}`;
+    const colCards=colMonthFilter(col,filteredCards.filter(c=>c.column_id==col.id).sort(cardSortCmp));
+    el.innerHTML=`<div class="kch"><div class="cdot" style="background:${col.color}"></div><div class="ctit" onclick="${ro?'':`renCol(this,${col.id})`}">${esc(col.title)}</div><span class="cnt">${colCards.length}</span>${!ro?`<button class="cmb" onclick="showCM(event,${col.id})"><i class="fas fa-ellipsis-v"></i></button>`:''}</div>${colMonthSelHtml(col)}<div class="kcards" id="kc-${col.id}" data-col-id="${col.id}"></div>${!ro?`<div class="qa-wrap"><button class="acb" id="qa-btn-${col.id}" onclick="showQA(${col.id},'qa')"><i class="fas fa-plus"></i> Agregar tarea</button><div class="qa-form" id="qa-form-${col.id}" style="display:none"><input class="qa-inp" id="qa-inp-${col.id}" placeholder="Título de la tarea..." autocomplete="off" onkeydown="qaKey(event,${col.id},'qa')"><div class="qa-btns"><button class="qa-ok" onclick="quickAddCard(${col.id},'qa')"><i class="fas fa-check"></i> Agregar</button><button class="qa-cancel" onclick="hideQA(${col.id},'qa')"><i class="fas fa-times"></i></button></div></div></div>`:''}`;
     board.insertBefore(el,add);
     const kce=document.getElementById('kc-'+col.id);
     colCards.forEach(c=>kce.appendChild(renderCard(c,col)));
@@ -2088,8 +2134,8 @@ function renderFK(){
   const filteredCards = filterCards([...CARDS]);
   COLS.sort((a,b)=>a.position-b.position).forEach(col=>{
     const el=document.createElement('div');el.className='kcol';el.dataset.colId=col.id;
-    const colCards=filteredCards.filter(c=>c.column_id==col.id).sort(cardSortCmp);
-    el.innerHTML=`<div class="kch"><div class="cdot" style="background:${col.color}"></div><div class="ctit">${esc(col.title)}</div><span class="cnt">${colCards.length}</span>${!ro?`<button class="cmb" onclick="showCM(event,${col.id})"><i class="fas fa-ellipsis-v"></i></button>`:''}</div><div class="kcards" id="fkc-${col.id}" data-col-id="${col.id}"></div>${!ro?`<div class="qa-wrap"><button class="acb" id="fqa-btn-${col.id}" onclick="showQA(${col.id},'fqa')"><i class="fas fa-plus"></i> Agregar</button><div class="qa-form" id="fqa-form-${col.id}" style="display:none"><input class="qa-inp" id="fqa-inp-${col.id}" placeholder="Título..." autocomplete="off" onkeydown="qaKey(event,${col.id},'fqa')"><div class="qa-btns"><button class="qa-ok" onclick="quickAddCard(${col.id},'fqa')"><i class="fas fa-check"></i></button><button class="qa-cancel" onclick="hideQA(${col.id},'fqa')"><i class="fas fa-times"></i></button></div></div></div>`:''}`;
+    const colCards=colMonthFilter(col,filteredCards.filter(c=>c.column_id==col.id).sort(cardSortCmp));
+    el.innerHTML=`<div class="kch"><div class="cdot" style="background:${col.color}"></div><div class="ctit">${esc(col.title)}</div><span class="cnt">${colCards.length}</span>${!ro?`<button class="cmb" onclick="showCM(event,${col.id})"><i class="fas fa-ellipsis-v"></i></button>`:''}</div>${colMonthSelHtml(col)}<div class="kcards" id="fkc-${col.id}" data-col-id="${col.id}"></div>${!ro?`<div class="qa-wrap"><button class="acb" id="fqa-btn-${col.id}" onclick="showQA(${col.id},'fqa')"><i class="fas fa-plus"></i> Agregar</button><div class="qa-form" id="fqa-form-${col.id}" style="display:none"><input class="qa-inp" id="fqa-inp-${col.id}" placeholder="Título..." autocomplete="off" onkeydown="qaKey(event,${col.id},'fqa')"><div class="qa-btns"><button class="qa-ok" onclick="quickAddCard(${col.id},'fqa')"><i class="fas fa-check"></i></button><button class="qa-cancel" onclick="hideQA(${col.id},'fqa')"><i class="fas fa-times"></i></button></div></div></div>`:''}`;
     fv.appendChild(el);
     const kce=document.getElementById('fkc-'+col.id);
     colCards.forEach(c=>kce.appendChild(renderCard(c,col)));
