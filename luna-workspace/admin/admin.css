@@ -1,0 +1,27 @@
+/* Luna Workspace Admin Styles */
+.luna-wrap h1 { margin-bottom: 20px; }
+.luna-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1200px; }
+@media (max-width: 800px) { .luna-grid { grid-template-columns: 1fr; } }
+.luna-card {
+    background: #fff;
+    border: 1px solid #dde0ee;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+.luna-card h2 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #5b6af0;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin: 0 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f0f2f8;
+}
+.luna-license-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+.luna-license-form input { flex: 1; min-width: 260px; }
+
+#luna-license-result .luna-ok  { color: #22d3a0; background: rgba(34,211,160,.08); border: 1px solid rgba(34,211,160,.2); border-radius: 6px; padding: 10px 14px; }
+#luna-license-result .luna-err { color: #ef4444; background: rgba(239,68,68,.08);  border: 1px solid rgba(239,68,68,.2);  border-radius: 6px; padding: 10px 14px; }
+#luna-license-result .luna-warn{ color: #f59e0b; background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.2); border-radius: 6px; padding: 10px 14px; }

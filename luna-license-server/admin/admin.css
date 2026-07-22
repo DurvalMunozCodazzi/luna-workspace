@@ -1,0 +1,133 @@
+/* ── Luna License Server Admin Styles ── */
+
+.lls-wrap { max-width: 1200px; }
+
+.lls-title {
+  font-size: 22px; font-weight: 800; color: #1a1a2e;
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 20px; padding-bottom: 12px;
+  border-bottom: 2px solid #5b6af0;
+}
+.lls-logo { font-size: 24px; }
+
+/* Notices */
+.lls-notice {
+  padding: 10px 16px; border-radius: 8px; margin-bottom: 16px;
+  font-size: 13px; font-weight: 600;
+}
+.lls-notice-success { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+.lls-notice-error   { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+.lls-notice-info    { background: #eff6ff; color: #1e40af; border: 1px solid #93c5fd; display:flex; align-items:center; gap:10px; }
+
+/* Stats */
+.lls-stats {
+  display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.lls-stat {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 10px;
+  padding: 14px 20px; display: flex; flex-direction: column; align-items: center;
+  min-width: 90px; box-shadow: 0 1px 4px rgba(0,0,0,.05);
+}
+.lls-stat-n { font-size: 26px; font-weight: 800; color: #1a1a2e; line-height: 1; }
+.lls-stat-l { font-size: 11px; color: #8888aa; font-weight: 600; margin-top: 4px; text-transform: uppercase; letter-spacing:.4px }
+.lls-stat-ok .lls-stat-n { color: #22d3a0; }
+.lls-stat-wa .lls-stat-n { color: #f59e0b; }
+.lls-stat-er .lls-stat-n { color: #ef4444; }
+
+/* Filters */
+.lls-filters { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+
+/* Table */
+.lls-table-wrap { overflow-x: auto; background: #fff; border-radius: 10px; border: 1px solid #e2e8f0; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+.lls-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.lls-table thead th { background: #f8fafc; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing:.5px; color: #64748b; padding: 10px 14px; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
+.lls-table tbody td { padding: 11px 14px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+.lls-table tbody tr:last-child td { border-bottom: none; }
+.lls-table tbody tr:hover td { background: #f8fafc; }
+.lls-empty { text-align: center; color: #94a3b8; padding: 30px !important; font-style: italic; }
+
+/* Key */
+.lls-key {
+  font-family: 'Courier New', monospace; font-size: 12px; font-weight: 700;
+  background: #f1f5f9; padding: 3px 8px; border-radius: 5px; color: #1e40af;
+  cursor: pointer; transition: background .15s; white-space: nowrap;
+}
+.lls-key:hover { background: #dbeafe; }
+
+/* Domain */
+.lls-domain { font-size: 12px; font-weight: 600; color: #374151; background: #f0fdf4; padding: 2px 8px; border-radius: 99px; border: 1px solid #86efac; }
+
+/* Meta */
+.lls-meta { font-size: 11px; color: #94a3b8; }
+
+/* Plan badges */
+.lls-plan { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 99px; text-transform: uppercase; letter-spacing:.3px }
+.lls-plan-starter      { background: #eff6ff; color: #1d4ed8; }
+.lls-plan-professional { background: #fdf4ff; color: #7e22ce; }
+.lls-plan-unlimited    { background: #fff7ed; color: #c2410c; }
+
+/* Status badges */
+.lls-badge { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 99px; }
+.lls-badge-ok { background: #dcfce7; color: #166534; }
+.lls-badge-wa { background: #fef3c7; color: #92400e; }
+.lls-badge-er { background: #fee2e2; color: #991b1b; }
+
+/* Actions */
+.lls-actions { display: flex; gap: 5px; flex-wrap: wrap; }
+
+/* Buttons */
+.lls-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 12px; border-radius: 7px; font-size: 12px; font-weight: 700;
+  text-decoration: none; cursor: pointer; border: none; font-family: inherit;
+  transition: all .15s; line-height: 1.4;
+}
+.lls-btn-primary { background: #5b6af0; color: #fff; }
+.lls-btn-primary:hover { background: #4a57d4; color: #fff; }
+.lls-btn-secondary { background: #e2e8f0; color: #374151; }
+.lls-btn-secondary:hover { background: #cbd5e1; color: #111; }
+.lls-btn-ghost { background: transparent; color: #64748b; border: 1px solid #e2e8f0; }
+.lls-btn-ghost:hover { background: #f8fafc; color: #374151; }
+.lls-btn-warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+.lls-btn-warning:hover { background: #fde68a; }
+.lls-btn-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+.lls-btn-danger:hover { background: #fca5a5; }
+.lls-btn-xs { padding: 3px 8px; font-size: 11px; border-radius: 5px; }
+.lls-btn-lg { padding: 10px 22px; font-size: 14px; }
+
+/* Pagination */
+.lls-pagination { display: flex; gap: 6px; align-items: center; margin-top: 14px; }
+
+/* Form */
+.lls-form-wrap { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 28px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+.lls-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.lls-field { display: flex; flex-direction: column; gap: 5px; }
+.lls-field-full { grid-column: 1 / -1; }
+.lls-label { font-size: 12px; font-weight: 700; color: #374151; }
+.lls-req { color: #ef4444; }
+.lls-input { padding: 9px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 13px; font-family: inherit; color: #1a1a2e; background: #f8fafc; transition: border-color .15s; width: 100%; box-sizing: border-box; }
+.lls-input:focus { border-color: #5b6af0; outline: none; background: #fff; }
+.lls-sel { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px; }
+.lls-hint { font-size: 11px; color: #94a3b8; line-height: 1.4; }
+.lls-mono { font-family: 'Courier New', monospace; font-size: 12px; }
+.lls-search { min-width: 260px; }
+
+/* Plan card */
+.lls-plan-card {
+  background: linear-gradient(135deg, #eff6ff, #fdf4ff);
+  border: 1.5px solid #c4b5fd; border-radius: 10px;
+  padding: 16px 20px; margin-bottom: 20px;
+}
+.lls-plan-card-title { font-size: 15px; font-weight: 800; color: #5b21b6; margin-bottom: 10px; }
+.lls-plan-card-row { display: flex; justify-content: space-between; font-size: 13px; color: #4b5563; padding: 4px 0; border-bottom: 1px solid rgba(196,181,253,.3); }
+.lls-plan-card-row:last-child { border-bottom: none; }
+.lls-plan-card-row strong { color: #1a1a2e; }
+
+/* Form footer */
+.lls-form-footer { display: flex; gap: 10px; align-items: center; padding-top: 10px; border-top: 1px solid #f1f5f9; margin-top: 20px; }
+
+@media (max-width: 782px) {
+  .lls-form-grid { grid-template-columns: 1fr; }
+  .lls-field-full { grid-column: auto; }
+  .lls-stats { gap: 8px; }
+}

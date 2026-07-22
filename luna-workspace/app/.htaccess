@@ -1,0 +1,12 @@
+Options -Indexes
+# Block direct access to config and cache files
+<FilesMatch "(luna-wp-config\.php|luna-license\.php|luna-license-cache\.json|luna-ads-cache\.json)$">
+    Require all denied
+</FilesMatch>
+
+# Never cache index.html — updates se reflejan inmediatamente
+<FilesMatch "^index\.html$">
+    Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+    Header set Pragma "no-cache"
+    Header set Expires "Thu, 01 Jan 1970 00:00:00 GMT"
+</FilesMatch>

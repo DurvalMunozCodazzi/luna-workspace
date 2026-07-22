@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Documentación Técnica — Luna Workspace</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Fira+Mono:wght@400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',Arial,sans-serif;font-size:13px;color:#1a1a2e;background:#fff;line-height:1.6}
+
+  /* ── PORTADA ── */
+  .cover{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#0e0e1a 0%,#1a1a3e 60%,#2a1a4e 100%);color:#fff;text-align:center;padding:60px 40px;page-break-after:always}
+  .cover-logo{font-size:64px;margin-bottom:24px}
+  .cover-title{font-size:36px;font-weight:800;color:#fff;margin-bottom:8px;letter-spacing:-1px}
+  .cover-sub{font-size:18px;font-weight:400;color:#aaaadd;margin-bottom:48px}
+  .cover-meta{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:24px 48px;display:inline-block}
+  .cover-meta p{font-size:13px;color:#ccccee;margin:4px 0}
+  .cover-meta strong{color:#fff}
+  .cover-badge{display:inline-block;background:#5b6af0;color:#fff;padding:6px 18px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:32px}
+
+  /* ── LAYOUT ── */
+  .page{max-width:900px;margin:0 auto;padding:48px 48px 64px}
+  h1{font-size:26px;font-weight:800;color:#1a1a2e;margin:48px 0 16px;padding-bottom:10px;border-bottom:3px solid #5b6af0}
+  h1:first-child{margin-top:0}
+  h2{font-size:17px;font-weight:700;color:#2a2a5e;margin:32px 0 10px;display:flex;align-items:center;gap:8px}
+  h2::before{content:'';display:inline-block;width:4px;height:18px;background:#5b6af0;border-radius:2px;flex-shrink:0}
+  h3{font-size:14px;font-weight:700;color:#5b6af0;margin:20px 0 6px}
+  p{margin-bottom:10px;color:#333}
+
+  /* ── ÁRBOL ── */
+  .tree{background:#f4f4f8;border:1px solid #dde;border-radius:10px;padding:24px 28px;font-family:'Fira Mono',monospace;font-size:12px;line-height:1.8;overflow-x:auto}
+  .tree .root{font-weight:700;color:#5b6af0;font-size:13px}
+  .tree .dir{color:#2a2a5e;font-weight:600}
+  .tree .file{color:#444}
+  .tree .comment{color:#888;font-style:italic}
+
+  /* ── TABLA DE ARCHIVOS ── */
+  table{width:100%;border-collapse:collapse;margin:16px 0 24px;font-size:12px}
+  thead tr{background:#5b6af0;color:#fff}
+  th{padding:10px 12px;text-align:left;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+  tbody tr:nth-child(even){background:#f7f7fb}
+  tbody tr:hover{background:#eeeef8}
+  td{padding:9px 12px;border-bottom:1px solid #e8e8f0;vertical-align:top}
+  td:first-child{font-family:'Fira Mono',monospace;font-size:11px;color:#5b6af0;white-space:nowrap;font-weight:600}
+  td.badge{white-space:nowrap}
+
+  /* ── BADGES ── */
+  .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;margin:1px}
+  .badge-api{background:#dbeafe;color:#1e40af}
+  .badge-auth{background:#fce7f3;color:#9d174d}
+  .badge-admin{background:#fef3c7;color:#92400e}
+  .badge-db{background:#d1fae5;color:#065f46}
+  .badge-wp{background:#ede9fe;color:#5b21b6}
+  .badge-util{background:#f3f4f6;color:#374151}
+  .badge-email{background:#ffedd5;color:#9a3412}
+  .badge-front{background:#ecfccb;color:#365314}
+
+  /* ── TABLAS DB ── */
+  .db-table{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:16px 20px;margin:8px 0 16px}
+  .db-table h4{font-size:12px;font-weight:700;color:#065f46;margin-bottom:8px;font-family:'Fira Mono',monospace}
+  .db-table ul{padding-left:18px;color:#333}
+  .db-table ul li{margin:3px 0;font-size:12px}
+  .db-cols{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .col-tag{background:#dcfce7;color:#166534;padding:2px 8px;border-radius:4px;font-size:10px;font-family:'Fira Mono',monospace}
+  .col-tag.pk{background:#bbf7d0;font-weight:700}
+
+  /* ── INFO BOXES ── */
+  .info-box{border-radius:8px;padding:14px 18px;margin:12px 0}
+  .info-box.blue{background:#eff6ff;border-left:4px solid #3b82f6}
+  .info-box.green{background:#f0fdf4;border-left:4px solid #22c55e}
+  .info-box.amber{background:#fffbeb;border-left:4px solid #f59e0b}
+  .info-box.purple{background:#faf5ff;border-left:4px solid #a855f7}
+  .info-box strong{font-weight:700}
+  .info-box p{margin:4px 0;font-size:12px}
+
+  /* ── FLUJO ── */
+  .flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:12px 0}
+  .flow-step{background:#5b6af0;color:#fff;padding:6px 14px;border-radius:6px;font-size:11px;font-weight:700}
+  .flow-arrow{color:#5b6af0;font-size:16px;font-weight:700}
+  .flow-step.db{background:#22c55e}
+  .flow-step.wp{background:#a855f7}
+  .flow-step.ext{background:#f59e0b}
+
+  /* ── PAGE BREAK ── */
+  .break{page-break-before:always;padding-top:0}
+  .break h1{margin-top:0}
+
+  /* ── TOC ── */
+  .toc{background:#f7f7fb;border:1px solid #e0e0f0;border-radius:10px;padding:24px 32px;margin:24px 0}
+  .toc h3{font-size:14px;font-weight:700;color:#5b6af0;margin-bottom:14px;display:block}
+  .toc ol{padding-left:20px}
+  .toc li{margin:6px 0;font-size:13px;color:#444}
+  .toc li a{color:#5b6af0;text-decoration:none}
+  .toc li a:hover{text-decoration:underline}
+
+  /* ── PRINT ── */
+  @media print{
+    body{font-size:11px}
+    .cover{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .tree,.db-table,.info-box{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    thead tr{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    a{color:inherit;text-decoration:none}
+    .break{page-break-before:always}
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  PORTADA                                              -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-logo">🌙</div>
+  <div class="cover-badge">Documentación Técnica v2.0</div>
+  <div class="cover-title">Luna Workspace</div>
+  <div class="cover-sub">Aplicación de gestión de proyectos tipo Kanban</div>
+  <div class="cover-meta">
+    <p><strong>Versión:</strong> 2.0.0</p>
+    <p><strong>Plataforma:</strong> WordPress Plugin + App PHP Standalone</p>
+    <p><strong>Base de datos:</strong> MySQL — admin_luna</p>
+    <p><strong>Servidor:</strong> websobreruedas.ar</p>
+    <p><strong>Ruta de instalación:</strong> /wordpress/wp-content/plugins/luna-workspace/</p>
+    <p><strong>URL de la app:</strong> /wordpress/wp-content/plugins/luna-workspace/app/</p>
+    <p><strong>Fecha:</strong> Mayo 2026</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  PÁGINA 2: ÍNDICE + ARQUITECTURA                      -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="page">
+
+<h1>Índice de contenidos</h1>
+<div class="toc">
+  <h3>Secciones</h3>
+  <ol>
+    <li>Arquitectura general del sistema</li>
+    <li>Árbol de directorios y archivos</li>
+    <li>Descripción detallada de cada archivo</li>
+    <li>Base de datos: estructura y tablas</li>
+    <li>Relación archivos ↔ base de datos</li>
+    <li>Flujo de autenticación y sesiones</li>
+    <li>Sistema de notificaciones y email</li>
+    <li>Configuración del servidor (cron, SMTP)</li>
+  </ol>
+</div>
+
+<h1>1. Arquitectura general del sistema</h1>
+
+<div class="info-box blue">
+  <p><strong>Luna Workspace</strong> es una aplicación web de gestión de proyectos tipo Kanban (similar a Trello/Kerika) que se instala como plugin de WordPress pero opera de forma completamente independiente con su propia base de datos MySQL.</p>
+</div>
+
+<h2>Capas del sistema</h2>
+
+<div class="flow">
+  <div class="flow-step front">🖥 Navegador<br><small>index.html (SPA)</small></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">⚡ API REST<br><small>app/api/*.php</small></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">⚙️ config.php<br><small>Auth + DB</small></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step db">🗄 MySQL<br><small>admin_luna</small></div>
+</div>
+
+<div class="flow">
+  <div class="flow-step wp">🔌 WordPress<br><small>Plugin hooks</small></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">📋 includes/<br><small>Activador/Admin</small></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">⚙️ luna-wp-config.php<br><small>(generado al activar)</small></div>
+</div>
+
+<h2>Descripción de la arquitectura</h2>
+<ul style="padding-left:20px;color:#333;font-size:13px">
+  <li style="margin:6px 0"><strong>Frontend (SPA):</strong> Una sola página HTML (<code>index.html</code>) de ~330KB que contiene toda la interfaz. Se comunica con el backend mediante llamadas AJAX/fetch a la API REST.</li>
+  <li style="margin:6px 0"><strong>Backend (API REST):</strong> 13 archivos PHP en <code>app/api/</code>, cada uno maneja un dominio funcional (tareas, usuarios, workspaces, etc.). Todos requieren autenticación via Bearer Token.</li>
+  <li style="margin:6px 0"><strong>Autenticación:</strong> Basada en tokens de sesión almacenados en la tabla <code>sessions</code>. El token viaja en el header HTTP <code>Authorization: Bearer {token}</code> o cookie <code>luna_token</code>.</li>
+  <li style="margin:6px 0"><strong>Base de datos:</strong> MySQL <code>admin_luna</code> sin prefijo de tablas. Contiene 18 tablas propias de Luna.</li>
+  <li style="margin:6px 0"><strong>WordPress:</strong> Solo actúa como instalador/activador. Una vez activa la app, WordPress no interviene en el funcionamiento diario.</li>
+</ul>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  PÁGINA 3: ÁRBOL DE DIRECTORIOS                       -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="page break">
+<h1>2. Árbol de directorios y archivos</h1>
+<p style="margin-bottom:6px">Ruta base en el servidor:</p>
+<p style="background:#f4f4f8;border:1px solid #dde;border-radius:6px;padding:8px 14px;font-family:'Fira Mono',monospace;font-size:11px;color:#5b6af0;margin-bottom:20px">/var/www/vhosts/websobreruedas.ar/httpdocs/wordpress/wp-content/plugins/<strong>luna-workspace/</strong></p>
+
+<style>
+.vtree{display:flex;flex-direction:column;gap:10px}
+.vfolder{border-radius:10px;overflow:hidden;border:1px solid #dde}
+.vfolder-header{display:flex;align-items:center;gap:10px;padding:10px 16px;font-weight:700;font-size:13px;color:#fff}
+.vfolder-header .ficon{font-size:18px;flex-shrink:0}
+.vfolder-header .fname{flex:1}
+.vfolder-header .fdesc{font-size:11px;font-weight:400;opacity:.85}
+.vfolder-body{padding:10px 14px 12px;display:flex;flex-direction:column;gap:5px;background:#fff}
+.vfile{display:flex;align-items:flex-start;gap:10px;padding:7px 10px;border-radius:7px;background:#f7f7fb;border:1px solid #eeeef5;transition:.15s}
+.vfile:hover{background:#f0f0fa;border-color:#d0d0ee}
+.vfile .ftype{font-size:15px;flex-shrink:0;margin-top:1px}
+.vfile .finfo{flex:1;min-width:0}
+.vfile .fn{font-family:'Fira Mono',monospace;font-size:11.5px;font-weight:600;color:#2a2a5e;margin-bottom:2px}
+.vfile .fd{font-size:11px;color:#666;line-height:1.4}
+.vfile .ftag{display:inline-block;padding:1px 7px;border-radius:8px;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;flex-shrink:0;margin-top:2px}
+.tag-api{background:#dbeafe;color:#1e40af}
+.tag-auth{background:#fce7f3;color:#9d174d}
+.tag-db{background:#d1fae5;color:#065f46}
+.tag-wp{background:#ede9fe;color:#5b21b6}
+.tag-util{background:#f3f4f6;color:#374151}
+.tag-email{background:#ffedd5;color:#9a3412}
+.tag-front{background:#ecfccb;color:#365314}
+.tag-sec{background:#fee2e2;color:#991b1b}
+.subfolder{margin-left:24px;border-left:3px solid #e0e0f0;padding-left:12px;display:flex;flex-direction:column;gap:5px;margin-top:5px;margin-bottom:5px}
+.subfolder-label{font-size:11px;font-weight:700;color:#8888aa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;display:flex;align-items:center;gap:5px}
+.root-file{display:flex;align-items:flex-start;gap:10px;padding:8px 12px;border-radius:8px;background:#fff8f0;border:2px solid #fed7aa;margin-bottom:8px}
+</style>
+
+<div class="vtree">
+
+  <!-- RAÍZ: archivo principal -->
+  <div class="root-file">
+    <span class="ftype">🔌</span>
+    <div class="finfo">
+      <div class="fn">luna-workspace.php</div>
+      <div class="fd">Archivo principal del plugin WordPress. Define constantes, carga clases y registra hooks de activación/desactivación.</div>
+    </div>
+    <span class="ftag tag-wp">WordPress</span>
+  </div>
+
+  <!-- CARPETA: admin/ -->
+  <div class="vfolder">
+    <div class="vfolder-header" style="background:#7c3aed">
+      <span class="ficon">📁</span>
+      <span class="fname">admin/</span>
+      <span class="fdesc">Panel de administración de WordPress</span>
+    </div>
+    <div class="vfolder-body">
+      <div class="vfile">
+        <span class="ftype">🎨</span>
+        <div class="finfo">
+          <div class="fn">admin.css</div>
+          <div class="fd">Estilos visuales del panel Luna en WP-Admin.</div>
+        </div>
+        <span class="ftag tag-wp">WordPress</span>
+      </div>
+      <div class="vfile">
+        <span class="ftype">⚡</span>
+        <div class="finfo">
+          <div class="fn">admin.js</div>
+          <div class="fd">Comportamiento interactivo del panel de administración WordPress.</div>
+        </div>
+        <span class="ftag tag-wp">WordPress</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARPETA: app/ -->
+  <div class="vfolder">
+    <div class="vfolder-header" style="background:#5b6af0">
+      <span class="ficon">📁</span>
+      <span class="fname">app/</span>
+      <span class="fdesc">Aplicación principal — accesible públicamente desde el navegador</span>
+    </div>
+    <div class="vfolder-body">
+
+      <div class="vfile">
+        <span class="ftype">🖥</span>
+        <div class="finfo">
+          <div class="fn">index.html</div>
+          <div class="fd">Interfaz completa de usuario (SPA). Contiene todo el HTML, CSS y JavaScript en ~330KB. Es el archivo que abre el usuario en el navegador para usar la app.</div>
+        </div>
+        <span class="ftag tag-front">Frontend</span>
+      </div>
+
+      <div class="vfile">
+        <span class="ftype">⚙️</span>
+        <div class="finfo">
+          <div class="fn">config.php</div>
+          <div class="fd">Corazón del backend. Configura la conexión a la base de datos, maneja autenticación (requireAuth, requireAdmin), define funciones base usadas por toda la API.</div>
+        </div>
+        <span class="ftag tag-db">BD + Auth</span>
+      </div>
+
+      <div class="vfile">
+        <span class="ftype">🧙</span>
+        <div class="finfo">
+          <div class="fn">luna-setup.php</div>
+          <div class="fd">Asistente web para configurar la conexión a la base de datos. Genera el archivo luna-wp-config.php. Eliminar después del primer uso.</div>
+        </div>
+        <span class="ftag tag-util">Utilidad</span>
+      </div>
+
+      <div class="vfile">
+        <span class="ftype">🔒</span>
+        <div class="finfo">
+          <div class="fn">.htaccess</div>
+          <div class="fd">Reglas de seguridad Apache para la carpeta app/. Configura reescritura de URLs y protecciones de acceso.</div>
+        </div>
+        <span class="ftag tag-sec">Seguridad</span>
+      </div>
+
+      <!-- SUBCARPETA: api/ -->
+      <div class="subfolder">
+        <div class="subfolder-label">📂 api/ — Endpoints REST de la API (13 archivos)</div>
+
+        <div class="vfile">
+          <span class="ftype">🔐</span>
+          <div class="finfo">
+            <div class="fn">auth.php</div>
+            <div class="fd">Login y logout. Valida credenciales, crea sesiones y devuelve el token Bearer de acceso.</div>
+          </div>
+          <span class="ftag tag-auth">Auth</span>
+        </div>
+
+        <div class="vfile">
+          <span class="ftype">📋</span>
+          <div class="finfo">
+            <div class="fn">kanban.php</div>
+            <div class="fd">Núcleo del tablero. Gestiona tarjetas, columnas, asignaciones, etiquetas, checklist, comentarios y adjuntos. El archivo más extenso de la API.</div>
+          </div>
+          <span class="ftag tag-api">API</span>
+        </div>
+
+        <div class="vfile">
+          <span class="ftype">🗂</span>
+          <div class="finfo">
+            <div class="fn">workspaces.php</div>
+            <div class="fd">Gestión de workspaces: crear, editar, eliminar, listar. También maneja miembros y cambio de workspace activo.</div>
+          </div>
+          <span class="ftag tag-api">API</span>
+        </div>
+
+        <div class="vfile">
+          <span class="ftype">👥</span>
+          <div class="finfo">
+            <div class="fn">users.php</div>
+            <div class="fd">CRUD completo de usuarios. Roles, contraseñas, fotos de perfil, preferencias de notificación y datos de contacto.</div>
+          </div>
+          <span class="ftag tag-api">API</span>
+        </div>
+
+        <div class="vfile">
+          <span class="ftype">📊</span>
+          <div class="finfo">
+            <div class="fn">metrics.php</div>
+            <div class="fd">Estadísticas del dashboard: tareas totales, completadas, vencidas, velocidad del equipo, distribución por columna y por miembro.</div>
+          </div>
+          <span class="ftag tag-api">API</span>
+        </div>
+
+        <div class="vfile">
+          <span class="ftype">🔔</span>
+          <div class="finfo">
+            <div class="fn">notifications.php</div>
+            <div class="fd">Sistema de notificaciones in-app. Lista notificaciones no leídas y las marca como leídas.</div>
+          </div>
+          <span class="ftag tag-api">API</span>
+        </div>
+
+        <div class="vfile">
+          <span class="ftype">⏰</span>
+          <div class="finfo">
+            <div class="fn">reminders.php</div>
+            <div class="fd">Recordatorios automáticos por email. Envía resumen diario de tareas por vencer a cada usuario asignado. Se ejecuta via cron o manualmente desde el panel admin.</div>
+          </div>
+          <span class="ftag tag-email">Email + Cron</span>
+        </div>
+
+        <div class="vfile">
+          <span class="ftype">📧</span>
+          <div class="finfo">
+            <div class="fn">email.php</div>
+            <div class="fd">Motor multicanal de notificaciones. Envía via SMTP (email), CallMeBot (WhatsApp), Meta API (WhatsApp Business) y Telegram Bot. Lo usan kanban.php y reminders.php.</div>
+          </div>
+          <span class="ftag tag-email">Email</span>
+        </div>
+
+        <div class="vfile">
+          <span class="ftype">🛠</span>
+          <div class="finfo">
+            <div class="fn">settings.php</div>
+            <div class="fd">Configuración general de la app (solo admins). Guarda y lee configuración de SMTP, WhatsApp y Telegram. Incluye endpoint para probar el envío de email.</div>
+          </div>
+          <span class="ftag tag-api">Admin API</span>
+        </div>
+
+        <div class="vfile">
+          <span class="ftype">📎</span>
+          <div class="finfo">
+            <div class="fn">upload.php</div>
+            <div class="fd">Subida de archivos adjuntos a tarjetas. Valida tipo y tamaño, guarda en app/uploads/ y registra en la base de datos.</div>
+          </div>
+          <span class="ftag tag-api">API</span>
+        </div>
+
+        <div class="vfile">
+          <span class="ftype">🗑</span>
+          <div class="finfo">
+            <div class="fn">delete_file.php</div>
+            <div class="fd">Elimina archivos adjuntos del disco y de la base de datos. Verifica permisos antes de borrar.</div>
+          </div>
+          <span class="ftag tag-api">API</span>
+        </div>
+
+        <div class="vfile">
+          <span class="ftype">🔍</span>
+          <div class="finfo">
+            <div class="fn">search.php</div>
+            <div class="fd">Búsqueda global en el workspace activo. Busca en títulos y descripciones de tarjetas. Devuelve hasta 50 resultados.</div>
+          </div>
+          <span class="ftag tag-api">API</span>
+        </div>
+
+        <div class="vfile">
+          <span class="ftype">💓</span>
+          <div class="finfo">
+            <div class="fn">ping.php</div>
+            <div class="fd">Health check del servidor. Devuelve {"ok":true} para verificar que el backend responde. No requiere autenticación.</div>
+          </div>
+          <span class="ftag tag-util">Utilidad</span>
+        </div>
+
+        <div class="vfile">
+          <span class="ftype">🔒</span>
+          <div class="finfo">
+            <div class="fn">.htaccess</div>
+            <div class="fd">Seguridad: bloquea el acceso directo a los archivos PHP de la API desde el navegador.</div>
+          </div>
+          <span class="ftag tag-sec">Seguridad</span>
+        </div>
+      </div>
+
+      <!-- SUBCARPETA: uploads/ -->
+      <div class="subfolder">
+        <div class="subfolder-label">📂 uploads/ — Archivos subidos por los usuarios</div>
+        <div class="vfile">
+          <span class="ftype">🔒</span>
+          <div class="finfo">
+            <div class="fn">.htaccess</div>
+            <div class="fd">Impide la ejecución de scripts PHP dentro de la carpeta de uploads. Solo permite descarga de archivos.</div>
+          </div>
+          <span class="ftag tag-sec">Seguridad</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CARPETA: includes/ -->
+  <div class="vfolder">
+    <div class="vfolder-header" style="background:#0f766e">
+      <span class="ficon">📁</span>
+      <span class="fname">includes/</span>
+      <span class="fdesc">Clases PHP de integración con WordPress</span>
+    </div>
+    <div class="vfolder-body">
+      <div class="vfile">
+        <span class="ftype">🚀</span>
+        <div class="finfo">
+          <div class="fn">class-luna-activator.php</div>
+          <div class="fd">Se ejecuta al activar el plugin en WordPress. Crea las 18 tablas de la base de datos, aplica migraciones, genera luna-wp-config.php y el cron secret.</div>
+        </div>
+        <span class="ftag tag-wp">WordPress</span>
+      </div>
+      <div class="vfile">
+        <span class="ftype">🖥</span>
+        <div class="finfo">
+          <div class="fn">class-luna-admin.php</div>
+          <div class="fd">Agrega el menú "Luna Workspace" en WP-Admin con estado de licencia, enlace a la app e instrucciones del cron job.</div>
+        </div>
+        <span class="ftag tag-wp">WordPress</span>
+      </div>
+      <div class="vfile">
+        <span class="ftype">🔑</span>
+        <div class="finfo">
+          <div class="fn">class-luna-license.php</div>
+          <div class="fd">Verifica la clave de licencia contra el servidor de websobreruedas.com. Define límites por plan: Starter (1 WS), Professional (3), Unlimited (∞).</div>
+        </div>
+        <span class="ftag tag-wp">WordPress</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARPETA: templates/ -->
+  <div class="vfolder">
+    <div class="vfolder-header" style="background:#94a3b8">
+      <span class="ficon">📁</span>
+      <span class="fname">templates/</span>
+      <span class="fdesc">Carpeta reservada para uso futuro — actualmente vacía</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="info-box amber" style="margin-top:20px">
+  <p><strong>⚠ Archivos temporales que deben eliminarse del servidor:</strong> <code>diag.php</code>, <code>fix.php</code>, <code>migrate.php</code> — son herramientas de diagnóstico y reparación. Dejarlos expuestos representa un riesgo de seguridad.</p>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  PÁGINA 4: DESCRIPCIÓN DE ARCHIVOS                    -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="page break">
+<h1>3. Descripción detallada de cada archivo</h1>
+
+<h2>Archivo principal del plugin</h2>
+
+<table>
+  <thead><tr><th>Archivo</th><th>Tipo</th><th>Descripción</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>luna-workspace.php</td>
+      <td class="badge-wp"><span class="badge badge-wp">WordPress</span></td>
+      <td>Punto de entrada del plugin. Contiene el encabezado de WordPress con metadatos (nombre, versión, autor). Define constantes globales: <code>LUNA_VERSION</code>, <code>LUNA_PLUGIN_DIR</code>, <code>LUNA_APP_DIR</code>. Carga las clases de <code>includes/</code> y registra los hooks de activación/desactivación de WordPress.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Aplicación principal — app/</h2>
+
+<table>
+  <thead><tr><th>Archivo</th><th>Tipo</th><th>Descripción y responsabilidades</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>index.html</td>
+      <td><span class="badge badge-front">Frontend</span></td>
+      <td><strong>Interfaz completa de usuario (SPA — Single Page Application).</strong> Contiene todo el HTML, CSS y JavaScript de la aplicación en un solo archivo de ~330KB. Incluye: tablero Kanban, vista Gantt, vista de lista, panel de métricas, gestión de usuarios, workspaces, notificaciones, configuración SMTP y calendario. Se comunica con la API mediante fetch/AJAX. No requiere recarga de página para navegar.</td>
+    </tr>
+    <tr>
+      <td>config.php</td>
+      <td><span class="badge badge-db">Base datos</span> <span class="badge badge-auth">Auth</span></td>
+      <td><strong>Configuración central — incluido por todos los archivos de la API.</strong> Responsabilidades: (1) Manejador de errores PHP que devuelve JSON, (2) Carga credenciales desde <code>luna-wp-config.php</code> si existe, (3) Fallback con credenciales de producción hardcodeadas (<code>admin_luna</code>), (4) Función <code>getDB()</code> — conexión PDO singleton a MySQL, (5) Funciones de autenticación: <code>requireAuth()</code>, <code>requireAdmin()</code>, <code>getBearerToken()</code>, (6) Función <code>tb($name)</code> — agrega el prefijo a los nombres de tablas, (7) Cabeceras CORS para peticiones cross-origin.</td>
+    </tr>
+    <tr>
+      <td>luna-setup.php</td>
+      <td><span class="badge badge-util">Utilidad</span></td>
+      <td>Asistente web de configuración inicial. Permite al administrador ingresar los datos de conexión a la base de datos (host, nombre, usuario, contraseña, prefijo, URL del sitio) y los guarda en <code>luna-wp-config.php</code>. Incluye prueba de conexión antes de guardar. <strong>Debe eliminarse o protegerse después del primer uso.</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>API REST — app/api/</h2>
+
+<table>
+  <thead><tr><th>Archivo</th><th>Tipo</th><th>Descripción y endpoints</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>auth.php</td>
+      <td><span class="badge badge-auth">Auth</span> <span class="badge badge-api">API</span></td>
+      <td><strong>Login y logout.</strong> POST <code>?action=login</code>: valida usuario/contraseña con <code>password_verify()</code>, crea registro en tabla <code>sessions</code>, devuelve token Bearer. POST <code>?action=logout</code>: elimina la sesión activa. Actualiza <code>last_login</code> del usuario en cada acceso.</td>
+    </tr>
+    <tr>
+      <td>kanban.php</td>
+      <td><span class="badge badge-api">API</span> <span class="badge badge-db">BD</span></td>
+      <td><strong>Núcleo del tablero Kanban — el archivo más extenso de la API.</strong> Gestiona: columnas (crear, editar, reordenar, eliminar), tarjetas/tareas (CRUD completo, mover entre columnas, archivar), asignación de usuarios a tareas, etiquetas, checklist, adjuntos, comentarios de chat, dependencias entre tareas. También envía notificaciones por email cuando se asigna o modifica una tarea.</td>
+    </tr>
+    <tr>
+      <td>workspaces.php</td>
+      <td><span class="badge badge-api">API</span> <span class="badge badge-db">BD</span></td>
+      <td><strong>Gestión de workspaces y sus miembros.</strong> Acciones: <code>list</code> (listar workspaces del usuario), <code>create</code> (con validación de límite de licencia), <code>update</code> (nombre, descripción, color, ícono, imagen), <code>delete</code>, <code>members</code> (ver miembros), <code>add_member</code>, <code>remove_member</code>, <code>switch</code> (cambiar workspace activo), <code>templates</code> (plantillas de columnas).</td>
+    </tr>
+    <tr>
+      <td>users.php</td>
+      <td><span class="badge badge-api">API</span> <span class="badge badge-admin">Admin</span></td>
+      <td><strong>Gestión completa de usuarios.</strong> Acciones: <code>list</code> (todos los usuarios), <code>me</code> (perfil propio), <code>create</code> (solo admin), <code>update</code> (editar usuario), <code>delete</code> (solo admin), <code>change_password</code>, <code>upload_photo</code>, <code>save_prefs</code> (preferencias). Campos: nombre, email, usuario, rol (admin/member/visitor), cargo, departamento, teléfono, canal de notificación.</td>
+    </tr>
+    <tr>
+      <td>metrics.php</td>
+      <td><span class="badge badge-api">API</span></td>
+      <td><strong>Métricas del dashboard.</strong> Devuelve: total de tareas, completadas, vencidas, por vencer esta semana, velocidad del equipo, distribución por columna, por prioridad, por miembro asignado, tareas completadas por semana (últimas 8 semanas), tareas creadas por semana. Todo filtrado por workspace.</td>
+    </tr>
+    <tr>
+      <td>notifications.php</td>
+      <td><span class="badge badge-api">API</span></td>
+      <td><strong>Sistema de notificaciones in-app.</strong> Acciones: <code>list</code> (notificaciones no leídas del usuario), <code>mark_read</code> (marcar como leída), <code>mark_all_read</code>. Las notificaciones se crean automáticamente cuando se asigna una tarea, se comenta, o vence un plazo.</td>
+    </tr>
+    <tr>
+      <td>reminders.php</td>
+      <td><span class="badge badge-email">Email</span> <span class="badge badge-api">API</span></td>
+      <td><strong>Recordatorios automáticos por email.</strong> Consulta tareas que vencen hoy y en los próximos 7 días, agrupa por usuario asignado, y envía un email personalizado a cada uno. Puede ejecutarse: (a) manualmente desde el panel admin, (b) automáticamente via cron job diario. Previene envíos duplicados guardando la fecha del último envío. Formato de email similar a Kerika: agrupado por workspace, con estado y fecha de cada tarea.</td>
+    </tr>
+    <tr>
+      <td>email.php</td>
+      <td><span class="badge badge-email">Email</span></td>
+      <td><strong>Motor de notificaciones multicanal.</strong> No es un endpoint público — es una librería incluida por otros archivos. Funciones: <code>sendSMTP()</code> envía email via socket SMTP (sin PHPMailer), <code>sendWhatsApp()</code> via CallMeBot API, <code>sendWhatsAppBusiness()</code> via Meta API, <code>sendTelegram()</code> via Bot API, <code>sendNotificationToUser()</code> enruta al canal configurado por el usuario. Lee configuración de la tabla <code>app_settings</code>.</td>
+    </tr>
+    <tr>
+      <td>settings.php</td>
+      <td><span class="badge badge-admin">Admin</span> <span class="badge badge-api">API</span></td>
+      <td><strong>Configuración general de la app (solo admins).</strong> Acciones: guardar y leer configuración SMTP, probar envío de email (<code>test_email</code>), configurar WhatsApp (CallMeBot y Business), configurar Telegram Bot, probar canales de mensajería. Guarda toda la configuración en la tabla <code>app_settings</code>.</td>
+    </tr>
+    <tr>
+      <td>upload.php</td>
+      <td><span class="badge badge-api">API</span></td>
+      <td><strong>Subida de archivos adjuntos.</strong> Recibe archivos via POST multipart, los guarda en <code>app/uploads/</code> con nombre único, registra en la tabla <code>attachments</code> con referencia a la tarjeta. Valida tipo MIME y tamaño. No permite acceso a visitantes.</td>
+    </tr>
+    <tr>
+      <td>delete_file.php</td>
+      <td><span class="badge badge-api">API</span></td>
+      <td><strong>Eliminación de archivos adjuntos.</strong> DELETE method. Verifica que el archivo pertenezca al usuario o que sea admin. Elimina el registro de la tabla <code>attachments</code> y el archivo físico de <code>uploads/</code>.</td>
+    </tr>
+    <tr>
+      <td>search.php</td>
+      <td><span class="badge badge-api">API</span></td>
+      <td><strong>Búsqueda global en el workspace activo.</strong> GET <code>?q=término</code>. Busca en títulos y descripciones de tarjetas. Mínimo 2 caracteres. Devuelve hasta 50 resultados ordenados por relevancia. Filtrado por workspace del usuario autenticado.</td>
+    </tr>
+    <tr>
+      <td>ping.php</td>
+      <td><span class="badge badge-util">Utilidad</span></td>
+      <td><strong>Health check.</strong> Devuelve <code>{"ok":true,"time":"..."}</code>. Usado para verificar que el servidor PHP responde correctamente. No requiere autenticación.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Clases WordPress — includes/</h2>
+
+<table>
+  <thead><tr><th>Archivo</th><th>Tipo</th><th>Descripción</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>class-luna-activator.php</td>
+      <td><span class="badge badge-wp">WordPress</span> <span class="badge badge-db">BD</span></td>
+      <td><strong>Se ejecuta cuando el plugin se activa en WordPress.</strong> Crea todas las tablas de Luna en la base de datos del plugin (<code>CREATE TABLE IF NOT EXISTS</code> para 18 tablas). Incluye migraciones: agrega columnas nuevas si no existen (<code>ALTER TABLE</code>). Genera el archivo <code>luna-wp-config.php</code> con las credenciales de la base de datos. Crea la página de WordPress que muestra la app. Genera el <code>LUNA_CRON_SECRET</code> para acceso seguro al cron.</td>
+    </tr>
+    <tr>
+      <td>class-luna-admin.php</td>
+      <td><span class="badge badge-wp">WordPress</span> <span class="badge badge-admin">Admin</span></td>
+      <td><strong>Integración con el panel de administración de WordPress.</strong> Agrega el menú "Luna Workspace" en WP-Admin. Muestra estado de la licencia, enlace a la app, instrucciones de configuración del cron job. Carga <code>admin.css</code> y <code>admin.js</code>.</td>
+    </tr>
+    <tr>
+      <td>class-luna-license.php</td>
+      <td><span class="badge badge-wp">WordPress</span></td>
+      <td><strong>Sistema de licencias.</strong> Verifica la clave de licencia contra el servidor <code>websobreruedas.com/licencias/api/verify.php</code>. Define límites por plan: Starter (1 workspace), Professional (3 workspaces), Unlimited (9999 workspaces). Cachea la respuesta por 30 días en <code>luna-license-cache.json</code> para no depender de conexión permanente.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  PÁGINA 5: BASE DE DATOS                              -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="page break">
+<h1>4. Base de datos — Estructura y tablas</h1>
+
+<div class="info-box green">
+  <p><strong>Base de datos activa:</strong> <code>admin_luna</code> en <code>localhost</code></p>
+  <p><strong>Usuario MySQL:</strong> <code>Luna</code></p>
+  <p><strong>Prefijo de tablas:</strong> ninguno (tablas sin prefijo: <code>users</code>, <code>cards</code>, etc.)</p>
+  <p><strong>Charset:</strong> utf8mb4 — soporta emojis y caracteres especiales</p>
+  <p><strong>Motor:</strong> InnoDB con soporte de claves foráneas</p>
+</div>
+
+<h2>Tablas principales</h2>
+
+<div class="db-table">
+  <h4>users — Usuarios del sistema</h4>
+  <div class="db-cols">
+    <span class="col-tag pk">id (PK)</span>
+    <span class="col-tag">username</span><span class="col-tag">name</span><span class="col-tag">email</span>
+    <span class="col-tag">password (hash)</span><span class="col-tag">role</span><span class="col-tag">active</span>
+    <span class="col-tag">color</span><span class="col-tag">photo</span><span class="col-tag">cargo</span>
+    <span class="col-tag">dept</span><span class="col-tag">notes</span><span class="col-tag">phone</span>
+    <span class="col-tag">whatsapp_apikey</span><span class="col-tag">telegram_chat_id</span>
+    <span class="col-tag">notification_channel</span><span class="col-tag">last_login</span><span class="col-tag">created_at</span>
+  </div>
+  <p style="margin-top:10px;font-size:12px">Roles posibles: <code>admin</code>, <code>member</code>, <code>visitor</code>. Las contraseñas se almacenan con <code>password_hash()</code> de PHP (bcrypt).</p>
+</div>
+
+<div class="db-table">
+  <h4>sessions — Sesiones activas</h4>
+  <div class="db-cols">
+    <span class="col-tag pk">id (PK)</span><span class="col-tag">user_id (FK→users)</span>
+    <span class="col-tag">token (único)</span><span class="col-tag">expires_at</span><span class="col-tag">created_at</span>
+  </div>
+  <p style="margin-top:10px;font-size:12px">Cada login genera un token único. La validez es de 24 horas (configurable con SESSION_HOURS). <code>requireAuth()</code> verifica que el token exista y no haya expirado.</p>
+</div>
+
+<div class="db-table">
+  <h4>workspaces — Espacios de trabajo</h4>
+  <div class="db-cols">
+    <span class="col-tag pk">id (PK)</span><span class="col-tag">name</span><span class="col-tag">description</span>
+    <span class="col-tag">created_by (FK→users)</span><span class="col-tag">color</span><span class="col-tag">icon</span>
+    <span class="col-tag">image</span><span class="col-tag">canvas (JSON)</span>
+    <span class="col-tag">created_at</span><span class="col-tag">updated_at</span>
+  </div>
+</div>
+
+<div class="db-table">
+  <h4>workspace_members — Miembros por workspace</h4>
+  <div class="db-cols">
+    <span class="col-tag pk">id (PK)</span>
+    <span class="col-tag">workspace_id (FK→workspaces)</span>
+    <span class="col-tag">user_id (FK→users)</span>
+    <span class="col-tag">role (admin/member/visitor)</span>
+  </div>
+  <p style="margin-top:10px;font-size:12px">Controla qué usuarios tienen acceso a cada workspace y con qué rol. Un usuario admin del sistema tiene acceso a todos los workspaces.</p>
+</div>
+
+<div class="db-table">
+  <h4>columns_k — Columnas del tablero Kanban</h4>
+  <div class="db-cols">
+    <span class="col-tag pk">id (PK)</span><span class="col-tag">workspace_id (FK→workspaces)</span>
+    <span class="col-tag">title</span><span class="col-tag">color</span><span class="col-tag">position</span>
+    <span class="col-tag">created_at</span>
+  </div>
+  <p style="margin-top:10px;font-size:12px">Columnas por defecto al crear workspace: "Por hacer", "En progreso", "En revisión", "Completado". Las columnas se ordenan por <code>position</code>.</p>
+</div>
+
+<div class="db-table">
+  <h4>cards — Tareas / Tarjetas Kanban</h4>
+  <div class="db-cols">
+    <span class="col-tag pk">id (PK)</span><span class="col-tag">workspace_id (FK)</span>
+    <span class="col-tag">column_id (FK→columns_k)</span><span class="col-tag">title</span>
+    <span class="col-tag">description</span><span class="col-tag">priority (low/medium/high/critical)</span>
+    <span class="col-tag">due_date</span><span class="col-tag">start_date</span>
+    <span class="col-tag">progress (0-100)</span><span class="col-tag">estimated (horas)</span>
+    <span class="col-tag">position</span><span class="col-tag">archived</span>
+    <span class="col-tag">created_by (FK→users)</span><span class="col-tag">created_at</span><span class="col-tag">updated_at</span>
+  </div>
+</div>
+
+<div class="db-table">
+  <h4>card_assignees — Asignaciones de tareas a usuarios</h4>
+  <div class="db-cols">
+    <span class="col-tag pk">id (PK)</span>
+    <span class="col-tag">card_id (FK→cards)</span>
+    <span class="col-tag">user_id (FK→users)</span>
+    <span class="col-tag">assigned_at</span>
+  </div>
+</div>
+
+<div class="db-table">
+  <h4>card_checklist — Subtareas / Lista de verificación</h4>
+  <div class="db-cols">
+    <span class="col-tag pk">id (PK)</span><span class="col-tag">card_id (FK→cards)</span>
+    <span class="col-tag">text</span><span class="col-tag">done (0/1)</span><span class="col-tag">position</span>
+  </div>
+</div>
+
+<div class="db-table">
+  <h4>card_tags — Etiquetas de tareas</h4>
+  <div class="db-cols">
+    <span class="col-tag pk">id (PK)</span><span class="col-tag">card_id (FK→cards)</span>
+    <span class="col-tag">tag</span><span class="col-tag">color</span>
+  </div>
+</div>
+
+<div class="db-table">
+  <h4>attachments — Archivos adjuntos</h4>
+  <div class="db-cols">
+    <span class="col-tag pk">id (PK)</span><span class="col-tag">card_id (FK→cards)</span>
+    <span class="col-tag">user_id (FK→users)</span><span class="col-tag">filename</span>
+    <span class="col-tag">original_name</span><span class="col-tag">mime_type</span>
+    <span class="col-tag">size</span><span class="col-tag">url</span><span class="col-tag">created_at</span>
+  </div>
+  <p style="margin-top:10px;font-size:12px">Los archivos físicos se guardan en <code>app/uploads/</code>. La URL pública apunta a <code>LUNA_UPLOAD_URL</code>.</p>
+</div>
+
+<div class="db-table">
+  <h4>chat_messages — Comentarios en tarjetas</h4>
+  <div class="db-cols">
+    <span class="col-tag pk">id (PK)</span><span class="col-tag">card_id (FK→cards)</span>
+    <span class="col-tag">user_id (FK→users)</span><span class="col-tag">message</span>
+    <span class="col-tag">created_at</span>
+  </div>
+</div>
+
+<div class="db-table">
+  <h4>notifications — Notificaciones del sistema</h4>
+  <div class="db-cols">
+    <span class="col-tag pk">id (PK)</span><span class="col-tag">user_id (FK→users)</span>
+    <span class="col-tag">from_user_id (FK→users)</span><span class="col-tag">type</span>
+    <span class="col-tag">card_id (FK→cards)</span><span class="col-tag">workspace_id</span>
+    <span class="col-tag">message</span><span class="col-tag">read_at</span><span class="col-tag">created_at</span>
+  </div>
+  <p style="margin-top:10px;font-size:12px">Tipos: <code>assigned</code>, <code>commented</code>, <code>due_soon</code>, <code>mention</code>.</p>
+</div>
+
+<div class="db-table">
+  <h4>app_settings — Configuración de la aplicación</h4>
+  <div class="db-cols">
+    <span class="col-tag pk">id (PK)</span>
+    <span class="col-tag">meta_key (único)</span>
+    <span class="col-tag">meta_value (JSON)</span>
+  </div>
+  <p style="margin-top:10px;font-size:12px">Claves almacenadas: <code>email_settings</code> (SMTP), <code>whatsapp_settings</code>, <code>whatsapp_business_settings</code>, <code>telegram_settings</code>, <code>reminders_last_sent</code> (fecha último envío de recordatorios).</p>
+</div>
+
+<div class="db-table">
+  <h4>user_meta — Preferencias de usuario</h4>
+  <div class="db-cols">
+    <span class="col-tag pk">id (PK)</span><span class="col-tag">user_id (FK→users)</span>
+    <span class="col-tag">meta_key</span><span class="col-tag">meta_value</span>
+  </div>
+  <p style="margin-top:10px;font-size:12px">Almacena: <code>active_workspace</code> (último workspace activo del usuario).</p>
+</div>
+
+<div class="db-table">
+  <h4>workspace_templates — Plantillas de workspaces</h4>
+  <div class="db-cols">
+    <span class="col-tag pk">id (PK)</span><span class="col-tag">name</span>
+    <span class="col-tag">columns_json</span><span class="col-tag">is_default</span>
+  </div>
+</div>
+
+<div class="db-table">
+  <h4>card_dependencies — Dependencias entre tareas</h4>
+  <div class="db-cols">
+    <span class="col-tag pk">id (PK)</span>
+    <span class="col-tag">card_id (FK→cards)</span>
+    <span class="col-tag">depends_on (FK→cards)</span>
+  </div>
+</div>
+
+<div class="db-table">
+  <h4>workspace_labels — Etiquetas del workspace</h4>
+  <div class="db-cols">
+    <span class="col-tag pk">id (PK)</span><span class="col-tag">workspace_id (FK)</span>
+    <span class="col-tag">name</span><span class="col-tag">color</span>
+  </div>
+</div>
+
+<div class="db-table">
+  <h4>activity_log — Registro de actividad</h4>
+  <div class="db-cols">
+    <span class="col-tag pk">id (PK)</span><span class="col-tag">user_id (FK→users)</span>
+    <span class="col-tag">action</span><span class="col-tag">entity_type</span>
+    <span class="col-tag">entity_id</span><span class="col-tag">details (JSON)</span><span class="col-tag">created_at</span>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  PÁGINA 6: RELACIÓN ARCHIVOS ↔ BASE DE DATOS          -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="page break">
+<h1>5. Relación archivos ↔ Base de datos</h1>
+
+<div class="info-box blue">
+  <p><strong>Todos los archivos de API</strong> comienzan con <code>require_once '../config.php'</code> que establece la conexión PDO a <code>admin_luna</code> mediante la función <code>getDB()</code>. La conexión es un singleton (se crea una sola vez por request).</p>
+</div>
+
+<table>
+  <thead><tr><th>Archivo</th><th>Tablas que utiliza</th><th>Operaciones</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>config.php</td>
+      <td>sessions, users</td>
+      <td>SELECT para validar token en <code>requireAuth()</code></td>
+    </tr>
+    <tr>
+      <td>auth.php</td>
+      <td>users, sessions</td>
+      <td>SELECT (login), INSERT (nueva sesión), DELETE (logout), UPDATE (last_login)</td>
+    </tr>
+    <tr>
+      <td>kanban.php</td>
+      <td>cards, columns_k, card_assignees, card_checklist, card_tags, attachments, chat_messages, card_dependencies, notifications, users, workspaces</td>
+      <td>CRUD completo. Todas las operaciones del tablero Kanban.</td>
+    </tr>
+    <tr>
+      <td>workspaces.php</td>
+      <td>workspaces, workspace_members, columns_k, cards, users, workspace_templates, user_meta</td>
+      <td>CRUD de workspaces. Gestión de miembros. Cambio de workspace activo.</td>
+    </tr>
+    <tr>
+      <td>users.php</td>
+      <td>users, workspace_members</td>
+      <td>CRUD de usuarios. Cambio de contraseña. Foto de perfil.</td>
+    </tr>
+    <tr>
+      <td>metrics.php</td>
+      <td>cards, columns_k, workspaces, card_assignees, users</td>
+      <td>Solo SELECT — consultas de agregación y estadísticas.</td>
+    </tr>
+    <tr>
+      <td>notifications.php</td>
+      <td>notifications, users, cards</td>
+      <td>SELECT (listar), UPDATE (marcar leída).</td>
+    </tr>
+    <tr>
+      <td>reminders.php</td>
+      <td>cards, columns_k, workspaces, card_assignees, users, notifications, app_settings</td>
+      <td>SELECT (tareas por vencer), INSERT (log notificaciones), INSERT/UPDATE (fecha último envío).</td>
+    </tr>
+    <tr>
+      <td>email.php</td>
+      <td>app_settings</td>
+      <td>SELECT y UPDATE de configuración SMTP, WhatsApp y Telegram.</td>
+    </tr>
+    <tr>
+      <td>settings.php</td>
+      <td>app_settings</td>
+      <td>SELECT y INSERT/UPDATE de todas las configuraciones de la app.</td>
+    </tr>
+    <tr>
+      <td>upload.php</td>
+      <td>attachments</td>
+      <td>INSERT al subir archivo. Guarda físicamente en <code>app/uploads/</code>.</td>
+    </tr>
+    <tr>
+      <td>delete_file.php</td>
+      <td>attachments</td>
+      <td>SELECT (verificar permisos), DELETE (registro y archivo físico).</td>
+    </tr>
+    <tr>
+      <td>search.php</td>
+      <td>cards, columns_k, workspaces, workspace_members</td>
+      <td>Solo SELECT — búsqueda LIKE en títulos y descripciones.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h1>6. Flujo de autenticación y sesiones</h1>
+
+<div class="flow">
+  <div class="flow-step">1. Usuario ingresa<br>usuario+contraseña</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">2. auth.php valida<br>password_verify()</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step db">3. INSERT en<br>sessions</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">4. Devuelve<br>Bearer Token</div>
+</div>
+
+<div class="flow" style="margin-top:16px">
+  <div class="flow-step">5. Cada request<br>envía el token</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">6. requireAuth()<br>valida en sessions</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step db">7. JOIN con users<br>WHERE expires_at>NOW()</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">8. Devuelve datos<br>del usuario</div>
+</div>
+
+<div class="info-box amber" style="margin-top:16px">
+  <p><strong>El token viaja de 3 formas:</strong></p>
+  <p>1. Header HTTP: <code>Authorization: Bearer {token}</code> (método preferido)</p>
+  <p>2. Cookie: <code>luna_token={token}</code> (para navegadores)</p>
+  <p>3. Query string: <code>?token={token}</code> (solo para cron jobs)</p>
+</div>
+
+<h1>7. Sistema de notificaciones y email</h1>
+
+<h2>Canales disponibles por usuario</h2>
+<table>
+  <thead><tr><th>Canal</th><th>Configuración requerida</th><th>Servicio externo</th></tr></thead>
+  <tbody>
+    <tr><td>Email (SMTP)</td><td>Servidor, puerto, usuario, contraseña en app_settings</td><td>Gmail / Outlook / SMTP propio</td></tr>
+    <tr><td>WhatsApp (CallMeBot)</td><td>Número de teléfono + API key por usuario</td><td>callmebot.com (gratuito)</td></tr>
+    <tr><td>WhatsApp Business</td><td>Phone Number ID + Access Token en app_settings</td><td>Meta Business API</td></tr>
+    <tr><td>Telegram</td><td>Bot Token en app_settings + Chat ID por usuario</td><td>api.telegram.org</td></tr>
+  </tbody>
+</table>
+
+<h2>Recordatorios diarios automáticos (cron)</h2>
+<div class="info-box green">
+  <p><strong>Comando cron recomendado</strong> (ejecutar a las 8:00 AM cada día):</p>
+  <p><code>0 8 * * * php /var/www/vhosts/websobreruedas.ar/httpdocs/wordpress/wp-content/plugins/luna-workspace/app/api/reminders.php</code></p>
+  <p style="margin-top:8px"><strong>O via HTTP con token secreto:</strong></p>
+  <p><code>https://websobreruedas.ar/wordpress/wp-content/plugins/luna-workspace/app/api/reminders.php?cron_secret=TU_SECRET</code></p>
+</div>
+
+<h1>8. Configuración del servidor</h1>
+
+<table>
+  <thead><tr><th>Parámetro</th><th>Valor actual</th></tr></thead>
+  <tbody>
+    <tr><td>URL de la app</td><td>https://websobreruedas.ar/wordpress/wp-content/plugins/luna-workspace/app/</td></tr>
+    <tr><td>Ruta física</td><td>/var/www/vhosts/websobreruedas.ar/httpdocs/wordpress/wp-content/plugins/luna-workspace/app/</td></tr>
+    <tr><td>Base de datos</td><td>admin_luna @ localhost</td></tr>
+    <tr><td>Usuario MySQL</td><td>Luna</td></tr>
+    <tr><td>Prefijo de tablas</td><td>ninguno (cadena vacía)</td></tr>
+    <tr><td>PHP mínimo requerido</td><td>7.3+</td></tr>
+    <tr><td>Extensiones PHP</td><td>pdo_mysql, json, mbstring, openssl</td></tr>
+    <tr><td>Sesiones</td><td>24 horas (SESSION_HOURS)</td></tr>
+    <tr><td>Versión Luna</td><td>2.0.0</td></tr>
+  </tbody>
+</table>
+
+<div class="info-box purple">
+  <p><strong>Nota importante sobre la configuración de credenciales:</strong> El archivo <code>app/config.php</code> intenta cargar primero <code>luna-wp-config.php</code> (generado por el plugin WordPress). Si ese archivo NO existe, usa las credenciales hardcodeadas de producción (<code>admin_luna</code>). Si existe pero apunta a la base de datos de WordPress, debe eliminarse para que la app use la base correcta.</p>
+</div>
+
+<div style="margin-top:48px;padding-top:24px;border-top:1px solid #ddd;text-align:center;color:#888;font-size:11px">
+  <p>🌙 Luna Workspace — Documentación Técnica v2.0 — websobreruedas.ar — Mayo 2026</p>
+  <p>Documento generado para uso interno del equipo de sistemas.</p>
+</div>
+
+</div>
+
+</body>
+</html>
