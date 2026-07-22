@@ -547,7 +547,12 @@ html,body{height:100%;font-family:var(--f);background:var(--bg);color:var(--t1);
 /* ── CALENDAR PANEL ── */
 /* A pantalla completa, igual que #metrics-panel — gana espacio y no queda
    atado a la altura recortada por el header/banner de ads */
-#cal-panel{position:fixed;inset:0;background:var(--bg);z-index:300;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+/* bottom:36px (no inset:0) para no quedar tapado por la barra de marca
+   #lads (position:fixed;bottom:0;height:36px;z-index:2147483647 — inyectada
+   por luna_serve_app(), siempre por encima de todo). Con inset:0 la última
+   fila de días quedaba con ~26px tapados de forma permanente (la grilla no
+   tiene scroll propio, así que no había manera de verlos). */
+#cal-panel{position:fixed;top:0;left:0;right:0;bottom:36px;background:var(--bg);z-index:300;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
 #cal-panel.on{transform:translateY(0)}
 
 

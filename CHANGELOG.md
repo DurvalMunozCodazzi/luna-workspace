@@ -4,6 +4,33 @@ Reconstruido el 2026-07-22 a partir de los .zip de cada versión (no había
 historial de git previo). Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 versionado [Semántico](https://semver.org/lang/es/).
 
+## luna-workspace [11.1.101] - 2026-07-22
+
+### Corregido
+- **La causa real del corte en el margen inferior del calendario** (los
+  fixes de 11.1.99 y 11.1.100 no lo eran — quedan igual porque no está de
+  más, pero no eran el problema en este caso concreto). `luna-workspace.php`
+  inyecta en cada página servida una barra de marca permanente (`#lads`,
+  "Luna Workspace · websobreruedas.com"): `position:fixed;bottom:0;
+  height:36px;z-index:2147483647` — el z-index más alto posible, a
+  propósito, para que quede siempre visible en cualquier plan. `#cal-panel`
+  usaba `inset:0`, así que su borde inferior coincidía exactamente con el
+  de la ventana — pero esa barra de marca se pinta SIEMPRE por encima de
+  absolutamente todo (2147483647 > cualquier z-index de la app), tapando
+  los últimos ~26px del calendario. Como `.cal-grid` no tiene scroll propio
+  (`overflow:hidden`), esos ~26px de la última fila de días quedaban
+  ocultos de forma permanente y sin ninguna manera de verlos — exactamente
+  el "corte en el margen inferior" reportado, confirmado con captura real
+  (se ve literalmente el texto "Luna Workspace · websobreruedas.com" pegado
+  contra la última fila).
+  - No se reprodujo en las pruebas anteriores porque esa barra la inyecta
+    `luna_serve_app()` en tiempo de request (PHP), no está en el
+    `app/index.html` crudo — las pruebas locales contra el archivo directo
+    nunca la tenían presente.
+  - `#cal-panel` pasa de `inset:0` a `top:0;left:0;right:0;bottom:36px`,
+    reservando el espacio exacto de la barra de marca. Confirmado con
+    Playwright simulando la barra real: el solape pasó de 26px a 0px.
+
 ## luna-workspace [11.1.100] - 2026-07-22
 
 ### Corregido
